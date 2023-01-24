@@ -1,16 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-public class EditorWindowSample : MonoBehaviour
+public class EditorWindowSample : EditorWindow
 {
-    // Start is called before the first frame update
-    void Start()
+    [MenuItem("Editor/Sample")]
+
+    private void Create()
     {
-        
+        //生成
+        EditorWindowSample window = GetWindow<EditorWindowSample>("サンプル");
+
+        // 最小サイズ設定
+        window.minSize = new Vector2(320, 320);
     }
 
-    // Update is called once per frame
     void Update()
     {
         
