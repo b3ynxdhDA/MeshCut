@@ -8,24 +8,18 @@ public class MeshCutRun : MonoBehaviour
 
     private MeshCut _meshCut = default;
 
-    GameObject game = default;
+    [SerializeField] private GameObject game = default;
 
-    RaycastHit hit;
+    private GameObject[] _test;
 
     void Start()
     {
 
-        _meshCut = GetComponent<MeshCut>();
-        //_meshCut.Cut(this.gameObject, Vector3.zero, Vector3.zero, _material);
+        _meshCut = new MeshCut();
+        _test = _meshCut.Cut(game, new Vector3(0.2f, 0,0), Vector3.right, _material);
     }
     void Update()
     {
-    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
-        Debug.DrawRay(ray.origin, hit.point - ray.origin, Color.blue, 10, false);
-        if(Physics.Raycast(ray, out hit))
-        {
 
-        }
     }
 }

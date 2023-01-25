@@ -115,23 +115,25 @@ public class MeshCut : MonoBehaviour
 
     }
 
-    private static MeshCutSide left_side = new MeshCutSide();
-    private static MeshCutSide right_side = new MeshCutSide();
+    private MeshCutSide left_side = new MeshCutSide();
+    private MeshCutSide right_side = new MeshCutSide();
 
-    private static Plane blade;
-    private static Mesh victim_mesh;
+    private Plane blade;
+    private Mesh _victim_mesh;
+    private static Mesh victim_mesh{ get; set; }
 
     // capping stuff
-    private static List<Vector3> new_vertices = new List<Vector3>();
+    private List<Vector3> new_vertices = new List<Vector3>();
 
     /// <summary>
     /// Cut the specified victim, blade_plane and capMaterial.
     /// （指定された「victim」をカットする。ブレード（平面）とマテリアルから切断を実行する）
+    /// staticだとエラーする 
     /// </summary>
     /// <param name="victim">Victim.</param>
     /// <param name="blade_plane">Blade plane.</param>
     /// <param name="capMaterial">Cap material.</param>
-    public static GameObject[] Cut(GameObject victim, Vector3 anchorPoint, Vector3 normalDirection, Material capMaterial)
+    public GameObject[] Cut(GameObject victim, Vector3 anchorPoint, Vector3 normalDirection, Material capMaterial)
     {
         // set the blade relative to victim
         // victimから相対的な平面（ブレード）をセット
@@ -300,7 +302,7 @@ public class MeshCut : MonoBehaviour
     /// <param name="index1">頂点1</param>
     /// <param name="index2">頂点2</param>
     /// <param name="index3">頂点3</param>
-    static void Cut_this_Face(int submesh, bool[] sides, int index1, int index2, int index3)
+    private void Cut_this_Face(int submesh, bool[] sides, int index1, int index2, int index3)
     {
         // 左右それぞれの情報を保持するための配列郡
         Vector3[] leftPoints = new Vector3[2];
@@ -400,7 +402,7 @@ public class MeshCut : MonoBehaviour
         // つまり、平面によって分割される点を探す。
         // 左の点を起点に、右の点に向けたレイを飛ばし、その分割点を探る。
         blade.Raycast(new Ray(leftPoints[0], (rightPoints[0] - leftPoints[0]).normalized), out distance);
-        Debug.DrawRay(leftPoints[0], (rightPoints[0] - leftPoints[0]).normalized * 100f, Color.red, 100,false);
+        Debug.DrawRay(leftPoints[0], (rightPoints[0] - leftPoints[0]).normalized * 10f, Color.red, 100,false);
 
         // 見つかった交差点を、頂点間の距離で割ることで、分割点の左右の割合を算出する
         normalizedDistance = distance / (rightPoints[0] - leftPoints[0]).magnitude;
@@ -463,13 +465,13 @@ public class MeshCut : MonoBehaviour
         );
     }
 
-    private static List<Vector3> capVertTracker = new List<Vector3>();
-    private static List<Vector3> capVertpolygon = new List<Vector3>();
+    private List<Vector3> capVertTracker = new List<Vector3>();
+    private List<Vector3> capVertpolygon = new List<Vector3>();
 
     /// <summary>
     /// カットを実行
     /// </summary>
-    static void Capping()
+    private void Capping()
     {
         // カット用頂点追跡リスト
         // 具体的には新頂点全部に対する調査を行う。その過程で調査済みをマークする目的で利用する。
@@ -536,7 +538,7 @@ public class MeshCut : MonoBehaviour
     /// カット面を埋める？
     /// </summary>
     /// <param name="vertices">ポリゴンを形成する頂点リスト</param>
-    static void FillCap(List<Vector3> vertices)
+    private void FillCap(List<Vector3> vertices)
     {
         // center of the cap
         // カット平面の中心点を計算する
