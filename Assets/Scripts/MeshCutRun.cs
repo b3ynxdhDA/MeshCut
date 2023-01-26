@@ -16,7 +16,7 @@ public class MeshCutRun : MonoBehaviour
     {
 
         _meshCut = new MeshCut();
-        _test = _meshCut.Cut(game, new Vector3(0.2f, 0,0), Vector3.right, _material);
+        _test = _meshCut.Cut(game, Vector3.zero, Vector3.up, _material);
     }
     void Update()
     {

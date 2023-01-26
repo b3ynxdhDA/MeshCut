@@ -279,8 +279,8 @@ public class MeshCut : MonoBehaviour
 
         // 右側のオブジェクトは新規作成
         GameObject leftSideObj = victim;
-
-        GameObject rightSideObj = new GameObject("right side", typeof(MeshFilter), typeof(MeshRenderer));
+        // 右側のオブジェクトに付けるコンポーネントを指定
+        GameObject rightSideObj = new GameObject("right side", typeof(MeshFilter), typeof(MeshRenderer), typeof(BoxCollider));
         rightSideObj.transform.position = victim.transform.position;
         rightSideObj.transform.rotation = victim.transform.rotation;
         rightSideObj.GetComponent<MeshFilter>().mesh = right_HalfMesh;
