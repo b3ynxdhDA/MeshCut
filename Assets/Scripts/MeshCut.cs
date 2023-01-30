@@ -6,10 +6,19 @@ public class MeshCut : MonoBehaviour
 {
     public class MeshCutSide
     {
+        // 三角形の頂点リスト
         public List<Vector3> vertices = new List<Vector3>();
+
+        // 三角形の法線
         public List<Vector3> normals = new List<Vector3>();
+
+        // テクスチャの座標
         public List<Vector2> uvs = new List<Vector2>();
+
+        // オブジェクトの三角形
         public List<int> triangles = new List<int>();
+
+        // サブインデックス
         public List<List<int>> subIndices = new List<List<int>>();
 
         public void ClearAll()
@@ -25,47 +34,48 @@ public class MeshCut : MonoBehaviour
         /// トライアングルとして3頂点を追加
         /// ※ 頂点情報は元のメッシュからコピーする
         /// </summary>
-        /// <param name="p1">頂点1</param>
-        /// <param name="p2">頂点2</param>
-        /// <param name="p3">頂点3</param>
+        /// <param name="peak1">頂点1</param>
+        /// <param name="peak2">頂点2</param>
+        /// <param name="peak3">頂点3</param>
         /// <param name="submesh">対象のサブメシュ</param>
-        public void AddTriangle(int p1, int p2, int p3, int submesh)
+        public void AddTriangle(int peak1, int peak2, int peak3, int submesh)
         {
             // triangle index order goes 1,2,3,4....
+            // 三角形のインデックス順は 1,2,3,4....
 
             // 頂点配列のカウント。随時追加されていくため、ベースとなるindexを定義する。
             // ※ AddTriangleが呼ばれるたびに頂点数は増えていく。
             int base_index = vertices.Count;
 
             // 対象サブメッシュのインデックスに追加していく
-            subIndices[submesh].Add(base_index + 0);
-            subIndices[submesh].Add(base_index + 1);
-            subIndices[submesh].Add(base_index + 2);
+            subIndices[submesh].Add(base_index + PEAK_ZERO);
+            subIndices[submesh].Add(base_index + PEAK_ONE);
+            subIndices[submesh].Add(base_index + PEAK_TWO);
 
             // 三角形郡の頂点を設定
-            triangles.Add(base_index + 0);
-            triangles.Add(base_index + 1);
-            triangles.Add(base_index + 2);
+            triangles.Add(base_index + PEAK_ZERO);
+            triangles.Add(base_index + PEAK_ONE);
+            triangles.Add(base_index + PEAK_TWO);
 
             // 対象オブジェクトの頂点配列から頂点情報を取得し設定する
             // （victim_meshはstaticメンバなんだけどいいんだろうか・・）
-            vertices.Add(victim_mesh.vertices[p1]);
-            vertices.Add(victim_mesh.vertices[p2]);
-            vertices.Add(victim_mesh.vertices[p3]);
+            vertices.Add(victim_mesh.vertices[peak1]);
+            vertices.Add(victim_mesh.vertices[peak2]);
+            vertices.Add(victim_mesh.vertices[peak3]);
 
             // 同様に、対象オブジェクトの法線配列から法線を取得し設定する
-            normals.Add(victim_mesh.normals[p1]);
-            normals.Add(victim_mesh.normals[p2]);
-            normals.Add(victim_mesh.normals[p3]);
+            normals.Add(victim_mesh.normals[peak1]);
+            normals.Add(victim_mesh.normals[peak2]);
+            normals.Add(victim_mesh.normals[peak3]);
 
             // 同様に、UVも。
-            uvs.Add(victim_mesh.uv[p1]);
-            uvs.Add(victim_mesh.uv[p2]);
-            uvs.Add(victim_mesh.uv[p3]);
+            uvs.Add(victim_mesh.uv[peak1]);
+            uvs.Add(victim_mesh.uv[peak2]);
+            uvs.Add(victim_mesh.uv[peak3]);
         }
 
         /// <summary>
-        /// トライアングルを追加する
+        /// 三角形を追加する
         /// ※ オーバーロードしている他メソッドとは異なり、引数の値で頂点（ポリゴン）を追加する
         /// </summary>
         /// <param name="points3">トライアングルを形成する3頂点</param>
@@ -76,44 +86,49 @@ public class MeshCut : MonoBehaviour
         public void AddTriangle(Vector3[] points3, Vector3[] normals3, Vector2[] uvs3, Vector3 faceNormal, int submesh)
         {
             // 引数の3頂点から法線を計算
-            Vector3 calculated_normal = Vector3.Cross((points3[1] - points3[0]).normalized, (points3[2] - points3[0]).normalized);
+            Vector3 calculated_normal = Vector3.Cross((points3[PEAK_ONE] - points3[PEAK_ZERO]).normalized, (points3[PEAK_TWO] - points3[PEAK_ZERO]).normalized);
 
-            int p1 = 0;
-            int p2 = 1;
-            int p3 = 2;
+            int peak1 = 0;
+            int peak2 = 1;
+            int peak3 = 2;
 
             // 引数で指定された法線と逆だった場合はインデックスの順番を逆順にする（つまり面を裏返す）
             if (Vector3.Dot(calculated_normal, faceNormal) < 0)
             {
-                p1 = 2;
-                p2 = 1;
-                p3 = 0;
+                peak1 = 2;
+                peak2 = 1;
+                peak3 = PEAK_ZERO;
             }
 
             int base_index = vertices.Count;
 
-            subIndices[submesh].Add(base_index + 0);
-            subIndices[submesh].Add(base_index + 1);
-            subIndices[submesh].Add(base_index + 2);
+            subIndices[submesh].Add(base_index + PEAK_ZERO);
+            subIndices[submesh].Add(base_index + PEAK_ONE);
+            subIndices[submesh].Add(base_index + PEAK_TWO);
 
-            triangles.Add(base_index + 0);
-            triangles.Add(base_index + 1);
-            triangles.Add(base_index + 2);
+            triangles.Add(base_index + PEAK_ZERO);
+            triangles.Add(base_index + PEAK_ONE);
+            triangles.Add(base_index + PEAK_TWO);
 
-            vertices.Add(points3[p1]);
-            vertices.Add(points3[p2]);
-            vertices.Add(points3[p3]);
+            vertices.Add(points3[peak1]);
+            vertices.Add(points3[peak2]);
+            vertices.Add(points3[peak3]);
 
-            normals.Add(normals3[p1]);
-            normals.Add(normals3[p2]);
-            normals.Add(normals3[p3]);
+            normals.Add(normals3[peak1]);
+            normals.Add(normals3[peak2]);
+            normals.Add(normals3[peak3]);
 
-            uvs.Add(uvs3[p1]);
-            uvs.Add(uvs3[p2]);
-            uvs.Add(uvs3[p3]);
+            uvs.Add(uvs3[peak1]);
+            uvs.Add(uvs3[peak2]);
+            uvs.Add(uvs3[peak3]);
         }
 
     }
+
+    // 頂点の順番
+    const int PEAK_ZERO = 0;
+    const int PEAK_ONE = 1;
+    const int PEAK_TWO = 2;
 
     private MeshCutSide left_side = new MeshCutSide();
     private MeshCutSide right_side = new MeshCutSide();
@@ -122,17 +137,16 @@ public class MeshCut : MonoBehaviour
     private Mesh _victim_mesh;
     private static Mesh victim_mesh{ get; set; }
 
-    // capping stuff
+    // キャッピングが完了した頂点
     private List<Vector3> new_vertices = new List<Vector3>();
 
     /// <summary>
-    /// Cut the specified victim, blade_plane and capMaterial.
     /// （指定された「victim」をカットする。ブレード（平面）とマテリアルから切断を実行する）
-    /// staticだとエラーする 
     /// </summary>
-    /// <param name="victim">Victim.</param>
-    /// <param name="blade_plane">Blade plane.</param>
-    /// <param name="capMaterial">Cap material.</param>
+    /// <param name="victim">カットするオブジェクト</param>
+    /// <param name="anchorPoint">切断面の位置</param>
+    /// <param name="normalDirection">切断面の角度</param>
+    /// <param name="capMaterial">切断面のマテリアル</param>
     public GameObject[] Cut(GameObject victim, Vector3 anchorPoint, Vector3 normalDirection, Material capMaterial)
     {
         // set the blade relative to victim
@@ -157,10 +171,10 @@ public class MeshCut : MonoBehaviour
         //平面より右の頂点郡（MeshCutSide）
         right_side.ClearAll();
 
-        // ここでの「3」はトライアングル？
+        // ここでの「3」は三角形の頂点数
         bool[] sides = new bool[3];
         int[] indices;
-        int p1, p2, p3;
+        int peak1, peak2, peak3;
 
         // go throught the submeshes
         // サブメッシュの数だけループ
@@ -176,35 +190,35 @@ public class MeshCut : MonoBehaviour
             // サブメッシュのインデックス数分ループ
             for (int i = 0; i < indices.Length; i += 3)
             {
-                // p1 - p3のインデックスを取得。つまりトライアングル
-                p1 = indices[i + 0];
-                p2 = indices[i + 1];
-                p3 = indices[i + 2];
+                // peak1 - peak3のインデックスを取得。つまりトライアングル
+                peak1 = indices[i + PEAK_ZERO];
+                peak2 = indices[i + PEAK_ONE];
+                peak3 = indices[i + PEAK_TWO];
 
                 // それぞれ評価中のメッシュの頂点が、冒頭で定義された平面の左右どちらにあるかを評価。
                 // `GetSide` メソッドによりboolを得る。
-                sides[0] = blade.GetSide(victim_mesh.vertices[p1]);
-                sides[1] = blade.GetSide(victim_mesh.vertices[p2]);
-                sides[2] = blade.GetSide(victim_mesh.vertices[p3]);
+                sides[PEAK_ZERO] = blade.GetSide(victim_mesh.vertices[peak1]);
+                sides[PEAK_ONE] = blade.GetSide(victim_mesh.vertices[peak2]);
+                sides[PEAK_TWO] = blade.GetSide(victim_mesh.vertices[peak3]);
 
                 // whole triangle
                 // 頂点０と頂点１および頂点２がどちらも同じ側にある場合はカットしない
-                if (sides[0] == sides[1] && sides[0] == sides[2])
+                if (sides[PEAK_ZERO] == sides[PEAK_ONE] && sides[PEAK_ZERO] == sides[PEAK_TWO])
                 {
-                    if (sides[0])
+                    if (sides[PEAK_ZERO])
                     { // left side
                       // GetSideメソッドでポジティブ（true）の場合は左側にあり
-                        left_side.AddTriangle(p1, p2, p3, sub);
+                        left_side.AddTriangle(peak1, peak2, peak3, sub);
                     }
                     else
                     {
-                        right_side.AddTriangle(p1, p2, p3, sub);
+                        right_side.AddTriangle(peak1, peak2, peak3, sub);
                     }
                 }
                 else
                 { // cut the triangle
                   // そうではなく、どちらかの点が平面の反対側にある場合はカットを実行する
-                    Cut_this_Face(sub, sides, p1, p2, p3);
+                    Cut_this_Face(sub, sides, peak1, peak2, peak3);
                 }
             }
         }
@@ -237,7 +251,6 @@ public class MeshCut : MonoBehaviour
         Capping();
 
 
-        // Left Mesh
         // 左側のメッシュを生成
         // MeshCutSideクラスのメンバから各値をコピー
         Mesh left_HalfMesh = new Mesh();
@@ -254,8 +267,7 @@ public class MeshCut : MonoBehaviour
         }
 
 
-        // Right Mesh
-        // 右側のメッシュも同様に生成
+        // 右側のメッシュを生成
         Mesh right_HalfMesh = new Mesh();
         right_HalfMesh.name = "Split Mesh Right";
         right_HalfMesh.vertices = right_side.vertices.ToArray();
@@ -270,7 +282,7 @@ public class MeshCut : MonoBehaviour
         }
 
 
-        // assign the game objects
+        // ゲームオブジェクトを割り当てる
 
         // 元のオブジェクトを左側のオブジェクトに
         victim.name = "left side";
@@ -285,7 +297,6 @@ public class MeshCut : MonoBehaviour
         rightSideObj.transform.rotation = victim.transform.rotation;
         rightSideObj.GetComponent<MeshFilter>().mesh = right_HalfMesh;
 
-        // assign mats
         // 新規生成したマテリアルリストをそれぞれのオブジェクトに適用する
         leftSideObj.GetComponent<MeshRenderer>().materials = mats;
         rightSideObj.GetComponent<MeshRenderer>().materials = mats;
@@ -305,12 +316,12 @@ public class MeshCut : MonoBehaviour
     private void Cut_this_Face(int submesh, bool[] sides, int index1, int index2, int index3)
     {
         // 左右それぞれの情報を保持するための配列郡
-        Vector3[] leftPoints = new Vector3[2];
-        Vector3[] leftNormals = new Vector3[2];
-        Vector2[] leftUvs = new Vector2[2];
-        Vector3[] rightPoints = new Vector3[2];
-        Vector3[] rightNormals = new Vector3[2];
-        Vector2[] rightUvs = new Vector2[2];
+        Vector3[] leftPoints = new Vector3[PEAK_TWO];
+        Vector3[] leftNormals = new Vector3[PEAK_TWO];
+        Vector2[] leftUvs = new Vector2[PEAK_TWO];
+        Vector3[] rightPoints = new Vector3[PEAK_TWO];
+        Vector3[] rightNormals = new Vector3[PEAK_TWO];
+        Vector2[] rightUvs = new Vector2[PEAK_TWO];
 
         bool didset_left = false;
         bool didset_right = false;
@@ -322,13 +333,13 @@ public class MeshCut : MonoBehaviour
         {
             switch (side)
             {
-                case 0:
+                case PEAK_ZERO:
                     p = index1;
                     break;
-                case 1:
+                case PEAK_ONE:
                     p = index2;
                     break;
-                case 2:
+                case PEAK_TWO:
                     p = index3;
                     break;
             }
@@ -346,23 +357,23 @@ public class MeshCut : MonoBehaviour
                     // つまり、アクセスされる可能性がある
 
                     // 頂点の設定
-                    leftPoints[0] = victim_mesh.vertices[p];
-                    leftPoints[1] = leftPoints[0];
+                    leftPoints[PEAK_ZERO] = victim_mesh.vertices[p];
+                    leftPoints[PEAK_ONE] = leftPoints[PEAK_ZERO];
 
                     // UVの設定
-                    leftUvs[0] = victim_mesh.uv[p];
-                    leftUvs[1] = leftUvs[0];
+                    leftUvs[PEAK_ZERO] = victim_mesh.uv[p];
+                    leftUvs[PEAK_ONE] = leftUvs[PEAK_ZERO];
 
                     // 法線の設定
-                    leftNormals[0] = victim_mesh.normals[p];
-                    leftNormals[1] = leftNormals[0];
+                    leftNormals[PEAK_ZERO] = victim_mesh.normals[p];
+                    leftNormals[PEAK_ONE] = leftNormals[PEAK_ZERO];
                 }
                 else
                 {
                     // 2頂点目の場合は2番目に直接頂点情報を設定する
-                    leftPoints[1] = victim_mesh.vertices[p];
-                    leftUvs[1] = victim_mesh.uv[p];
-                    leftNormals[1] = victim_mesh.normals[p];
+                    leftPoints[PEAK_ONE] = victim_mesh.vertices[p];
+                    leftUvs[PEAK_ONE] = victim_mesh.uv[p];
+                    leftNormals[PEAK_ONE] = victim_mesh.normals[p];
                 }
             }
             else
@@ -372,18 +383,18 @@ public class MeshCut : MonoBehaviour
                 {
                     didset_right = true;
 
-                    rightPoints[0] = victim_mesh.vertices[p];
-                    rightPoints[1] = rightPoints[0];
-                    rightUvs[0] = victim_mesh.uv[p];
-                    rightUvs[1] = rightUvs[0];
-                    rightNormals[0] = victim_mesh.normals[p];
-                    rightNormals[1] = rightNormals[0];
+                    rightPoints[PEAK_ZERO] = victim_mesh.vertices[p];
+                    rightPoints[PEAK_ONE] = rightPoints[PEAK_ZERO];
+                    rightUvs[PEAK_ZERO] = victim_mesh.uv[p];
+                    rightUvs[PEAK_ONE] = rightUvs[PEAK_ZERO];
+                    rightNormals[PEAK_ZERO] = victim_mesh.normals[p];
+                    rightNormals[PEAK_ONE] = rightNormals[PEAK_ZERO];
                 }
                 else
                 {
-                    rightPoints[1] = victim_mesh.vertices[p];
-                    rightUvs[1] = victim_mesh.uv[p];
-                    rightNormals[1] = victim_mesh.normals[p];
+                    rightPoints[PEAK_ONE] = victim_mesh.vertices[p];
+                    rightUvs[PEAK_ONE] = victim_mesh.uv[p];
+                    rightNormals[PEAK_ONE] = victim_mesh.normals[p];
                 }
             }
         }
@@ -401,16 +412,16 @@ public class MeshCut : MonoBehaviour
         // 定義した面と交差する点を探す。
         // つまり、平面によって分割される点を探す。
         // 左の点を起点に、右の点に向けたレイを飛ばし、その分割点を探る。
-        blade.Raycast(new Ray(leftPoints[0], (rightPoints[0] - leftPoints[0]).normalized), out distance);
-        Debug.DrawRay(leftPoints[0], (rightPoints[0] - leftPoints[0]).normalized * 10f, Color.red, 100,false);
+        blade.Raycast(new Ray(leftPoints[PEAK_ZERO], (rightPoints[PEAK_ZERO] - leftPoints[PEAK_ZERO]).normalized), out distance);
+        Debug.DrawRay(leftPoints[PEAK_ZERO], (rightPoints[PEAK_ZERO] - leftPoints[PEAK_ZERO]).normalized * 10f, Color.red, 100,false);
 
         // 見つかった交差点を、頂点間の距離で割ることで、分割点の左右の割合を算出する
-        normalizedDistance = distance / (rightPoints[0] - leftPoints[0]).magnitude;
+        normalizedDistance = distance / (rightPoints[PEAK_ZERO] - leftPoints[PEAK_ZERO]).magnitude;
 
         // カット後の新頂点に対する処理。フラグメントシェーダでの補完と同じく、分割した位置に応じて適切に補完した値を設定する
-        Vector3 newVertex1 = Vector3.Lerp(leftPoints[0], rightPoints[0], normalizedDistance);
-        Vector2 newUv1 = Vector2.Lerp(leftUvs[0], rightUvs[0], normalizedDistance);
-        Vector3 newNormal1 = Vector3.Lerp(leftNormals[0], rightNormals[0], normalizedDistance);
+        Vector3 newVertex1 = Vector3.Lerp(leftPoints[PEAK_ZERO], rightPoints[PEAK_ZERO], normalizedDistance);
+        Vector2 newUv1 = Vector2.Lerp(leftUvs[PEAK_ZERO], rightUvs[PEAK_ZERO], normalizedDistance);
+        Vector3 newNormal1 = Vector3.Lerp(leftNormals[PEAK_ZERO], rightNormals[PEAK_ZERO], normalizedDistance);
 
         // 新頂点郡に新しい頂点を追加
         new_vertices.Add(newVertex1);
@@ -419,12 +430,12 @@ public class MeshCut : MonoBehaviour
         // ---------------------------
         // 右側の処理
 
-        blade.Raycast(new Ray(leftPoints[1], (rightPoints[1] - leftPoints[1]).normalized), out distance);
+        blade.Raycast(new Ray(leftPoints[PEAK_ONE], (rightPoints[PEAK_ONE] - leftPoints[PEAK_ONE]).normalized), out distance);
 
-        normalizedDistance = distance / (rightPoints[1] - leftPoints[1]).magnitude;
-        Vector3 newVertex2 = Vector3.Lerp(leftPoints[1], rightPoints[1], normalizedDistance);
-        Vector2 newUv2 = Vector2.Lerp(leftUvs[1], rightUvs[1], normalizedDistance);
-        Vector3 newNormal2 = Vector3.Lerp(leftNormals[1], rightNormals[1], normalizedDistance);
+        normalizedDistance = distance / (rightPoints[PEAK_ONE] - leftPoints[PEAK_ONE]).magnitude;
+        Vector3 newVertex2 = Vector3.Lerp(leftPoints[PEAK_ONE], rightPoints[PEAK_ONE], normalizedDistance);
+        Vector2 newUv2 = Vector2.Lerp(leftUvs[PEAK_ONE], rightUvs[PEAK_ONE], normalizedDistance);
+        Vector3 newNormal2 = Vector3.Lerp(leftNormals[PEAK_ONE], rightNormals[PEAK_ONE], normalizedDistance);
 
         // 新頂点郡に新しい頂点を追加
         new_vertices.Add(newVertex2);
@@ -433,33 +444,33 @@ public class MeshCut : MonoBehaviour
         // 計算された新しい頂点を使って、新トライアングルを左右ともに追加する
         // memo: どう分割されても、左右どちらかは1つの三角形になる気がするけど、縮退三角形的な感じでとにかく2つずつ追加している感じだろうか？
         left_side.AddTriangle(
-            new Vector3[] { leftPoints[0], newVertex1, newVertex2 },
-            new Vector3[] { leftNormals[0], newNormal1, newNormal2 },
-            new Vector2[] { leftUvs[0], newUv1, newUv2 },
+            new Vector3[] { leftPoints[PEAK_ZERO], newVertex1, newVertex2 },
+            new Vector3[] { leftNormals[PEAK_ZERO], newNormal1, newNormal2 },
+            new Vector2[] { leftUvs[PEAK_ZERO], newUv1, newUv2 },
             newNormal1,
             submesh
         );
 
         left_side.AddTriangle(
-            new Vector3[] { leftPoints[0], leftPoints[1], newVertex2 },
-            new Vector3[] { leftNormals[0], leftNormals[1], newNormal2 },
-            new Vector2[] { leftUvs[0], leftUvs[1], newUv2 },
+            new Vector3[] { leftPoints[PEAK_ZERO], leftPoints[PEAK_ONE], newVertex2 },
+            new Vector3[] { leftNormals[PEAK_ZERO], leftNormals[PEAK_ONE], newNormal2 },
+            new Vector2[] { leftUvs[PEAK_ZERO], leftUvs[PEAK_ONE], newUv2 },
             newNormal2,
             submesh
         );
 
         right_side.AddTriangle(
-            new Vector3[] { rightPoints[0], newVertex1, newVertex2 },
-            new Vector3[] { rightNormals[0], newNormal1, newNormal2 },
-            new Vector2[] { rightUvs[0], newUv1, newUv2 },
+            new Vector3[] { rightPoints[PEAK_ZERO], newVertex1, newVertex2 },
+            new Vector3[] { rightNormals[PEAK_ZERO], newNormal1, newNormal2 },
+            new Vector2[] { rightUvs[PEAK_ZERO], newUv1, newUv2 },
             newNormal1,
             submesh
         );
 
         right_side.AddTriangle(
-            new Vector3[] { rightPoints[0], rightPoints[1], newVertex2 },
-            new Vector3[] { rightNormals[0], rightNormals[1], newNormal2 },
-            new Vector2[] { rightUvs[0], rightUvs[1], newUv2 },
+            new Vector3[] { rightPoints[PEAK_ZERO], rightPoints[PEAK_ONE], newVertex2 },
+            new Vector3[] { rightNormals[PEAK_ZERO], rightNormals[PEAK_ONE], newNormal2 },
+            new Vector2[] { rightUvs[PEAK_ZERO], rightUvs[PEAK_ONE], newUv2 },
             newNormal2,
             submesh
         );
@@ -491,12 +502,12 @@ public class MeshCut : MonoBehaviour
             capVertpolygon.Clear();
 
             // 調査頂点と次の頂点をポリゴン配列に保持する
-            capVertpolygon.Add(new_vertices[i + 0]);
-            capVertpolygon.Add(new_vertices[i + 1]);
+            capVertpolygon.Add(new_vertices[i + PEAK_ZERO]);
+            capVertpolygon.Add(new_vertices[i + PEAK_ONE]);
 
             // 追跡配列に自身と次の頂点を追加する（調査済みのマークをつける）
-            capVertTracker.Add(new_vertices[i + 0]);
-            capVertTracker.Add(new_vertices[i + 1]);
+            capVertTracker.Add(new_vertices[i + PEAK_ZERO]);
+            capVertTracker.Add(new_vertices[i + PEAK_ONE]);
 
             // 重複頂点がなくなるまでループし調査する
             bool isDone = false;
@@ -512,15 +523,15 @@ public class MeshCut : MonoBehaviour
                   // ここでのペアとは、いちトライアングルから生成される新頂点のペア。
                   // トライアングルからは必ず2頂点が生成されるため、それを探す。
                   // また、全ポリゴンに対して分割点を生成しているため、ほぼ必ず、まったく同じ位置に存在する、別トライアングルの分割頂点が存在するはずである。
-                    if (new_vertices[k] == capVertpolygon[capVertpolygon.Count - 1] && !capVertTracker.Contains(new_vertices[k + 1]))
+                    if (new_vertices[k] == capVertpolygon[capVertpolygon.Count - PEAK_ONE] && !capVertTracker.Contains(new_vertices[k + PEAK_ONE]))
                     {   // if so add the other
                         // ペアの頂点が見つかったらそれをポリゴン配列に追加し、
                         // 調査済マークをつけて、次のループ処理に回す
                         isDone = false;
-                        capVertpolygon.Add(new_vertices[k + 1]);
-                        capVertTracker.Add(new_vertices[k + 1]);
+                        capVertpolygon.Add(new_vertices[k + PEAK_ONE]);
+                        capVertTracker.Add(new_vertices[k + PEAK_ONE]);
                     }
-                    else if (new_vertices[k + 1] == capVertpolygon[capVertpolygon.Count - 1] && !capVertTracker.Contains(new_vertices[k]))
+                    else if (new_vertices[k + PEAK_ONE] == capVertpolygon[capVertpolygon.Count - PEAK_ONE] && !capVertTracker.Contains(new_vertices[k]))
                     {   // if so add the other
                         isDone = false;
                         capVertpolygon.Add(new_vertices[k]);

@@ -10,13 +10,10 @@ public class MeshCutRun : MonoBehaviour
 
     [SerializeField] private GameObject game = default;
 
-    private GameObject[] _test;
-
     void Start()
     {
-
         _meshCut = new MeshCut();
-        _test = _meshCut.Cut(game, Vector3.zero, Vector3.up, _material);
+        _meshCut.Cut(game, Vector3.zero, Vector3.right, _material);
     }
     void Update()
     {
