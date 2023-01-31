@@ -145,7 +145,7 @@ public class MeshCut : MonoBehaviour
     /// </summary>
     /// <param name="victim">カットするオブジェクト</param>
     /// <param name="anchorPoint">切断面の位置</param>
-    /// <param name="normalDirection">切断面の角度</param>
+    /// <param name="normalDirection">切断面の法線</param>
     /// <param name="capMaterial">切断面のマテリアル</param>
     public GameObject[] Cut(GameObject victim, Vector3 anchorPoint, Vector3 normalDirection, Material capMaterial)
     {

@@ -10,6 +10,9 @@ using UnityEngine.Rendering;
 using System.Linq;
 using System.IO;
 
+/// <summary>
+/// MeshCutウィンドウでビューを表示するクラス
+/// </summary>
 public class PreviewScene : IDisposable
 {
     public Scene Scene { get; private set; }
