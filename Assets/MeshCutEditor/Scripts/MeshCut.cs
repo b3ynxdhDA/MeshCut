@@ -157,6 +157,7 @@ public class MeshCut : MonoBehaviour
         // victimから相対的な平面（ブレード）をセット
         // 具体的には、対象オブジェクトのローカル座標での平面の法線と位置から平面を生成する
         blade = new Plane(
+            // ローカル座標に変換
             victim.transform.InverseTransformDirection(-normalDirection),
             victim.transform.InverseTransformPoint(anchorPoint)
         );
@@ -183,7 +184,7 @@ public class MeshCut : MonoBehaviour
             // サブメッシュのインデックス数を取得
             indices = victim_mesh.GetIndices(sub);
 
-            // List<List<int>>型のリスト。サブメッシュ一つ分のインデックスリスト
+            // List<List<int>>型のリストにサブメッシュ一つ分のインデックスリストを追加
             left_side.subIndices.Add(new List<int>());  // 左
             right_side.subIndices.Add(new List<int>()); // 右
 
@@ -273,17 +274,40 @@ public class MeshCut : MonoBehaviour
         // 元のオブジェクトを左側のオブジェクトに
         victim.name = "left side";
         victim.GetComponent<MeshFilter>().mesh = left_HalfMesh;
+        if (!victim.GetComponent<MeshCollider>())
+        {
+            // 元のオブジェクトがMeshCollider以外だったら
+            // 既存のコライダーを削除してMeshColliderをアタッチする
+            Destroy(victim.GetComponent<Collider>());
+            victim.AddComponent<MeshCollider>().convex = true;
+        }
+        victim.GetComponent<MeshCollider>().sharedMesh = left_HalfMesh;
+        // ＠アセットによるポリゴン削減
+        victim.AddComponent<OptimizeMesh>()._quality = 0.15f;
+        victim.GetComponent<OptimizeMesh>().DecimateMesh();
 
         // 左側のオブジェクトはそのままコピー
         GameObject leftSideObj = victim;
 
+        
+
         // 右側のオブジェクトは新規作成してコンポーネントを指定
-        GameObject rightSideObj = new GameObject("right side", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));//, typeof(Rigidbody)
+        GameObject rightSideObj = new GameObject("right side", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider), typeof(OptimizeMesh));//
         rightSideObj.transform.position = victim.transform.position;
         rightSideObj.transform.rotation = victim.transform.rotation;
         rightSideObj.transform.localScale = victim.transform.localScale;
         rightSideObj.GetComponent<MeshFilter>().mesh = right_HalfMesh;
-        // メッシュコライダーの調整
+        // 右側のオブジェクトのコライダーを調整
+        rightSideObj.GetComponent<MeshCollider>().sharedMesh = right_HalfMesh;
+        rightSideObj.GetComponent<MeshCollider>().convex = true;
+        // ＠アセットによるポリゴン削減
+        victim.AddComponent<OptimizeMesh>()._quality = 0.15f;
+        victim.GetComponent<OptimizeMesh>().DecimateMesh();
+        // 元のオブジェクトにRigidbodyがついているか
+        if (victim.GetComponent<Rigidbody>())
+        {
+            rightSideObj.AddComponent<Rigidbody>();
+        }
 
         // 新規生成したマテリアルリストをそれぞれのオブジェクトに適用する
         leftSideObj.GetComponent<MeshRenderer>().materials = mats.ToArray();
@@ -304,12 +328,12 @@ public class MeshCut : MonoBehaviour
     private void Cut_this_Face(int submesh, bool[] sides, int index1, int index2, int index3)
     {
         // 左右それぞれの情報を保持するための配列郡
-        Vector3[] leftPoints = new Vector3[PEAK_TWO];
-        Vector3[] leftNormals = new Vector3[PEAK_TWO];
-        Vector2[] leftUvs = new Vector2[PEAK_TWO];
-        Vector3[] rightPoints = new Vector3[PEAK_TWO];
-        Vector3[] rightNormals = new Vector3[PEAK_TWO];
-        Vector2[] rightUvs = new Vector2[PEAK_TWO];
+        Vector3[] leftPoints = new Vector3[2];
+        Vector3[] leftNormals = new Vector3[2];
+        Vector2[] leftUvs = new Vector2[2];
+        Vector3[] rightPoints = new Vector3[2];
+        Vector3[] rightNormals = new Vector3[2];
+        Vector2[] rightUvs = new Vector2[2];
 
         //左に設定されているか
         bool didset_left = false;

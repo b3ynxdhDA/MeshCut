@@ -27,11 +27,12 @@ public class MeshCutRun : MonoBehaviour
     }
     void Update()
     {
+        
         //切断面を生成するRay
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Input.GetMouseButton(0) && Physics.Raycast(ray, out hit))
+        Debug.DrawRay(ray.origin, ray.direction * 50f, Color.green);
+        if (Input.GetMouseButton(0) && Physics.Raycast(ray, out hit) && hit.transform.GetComponent<MeshFilter>())
         {
-
             _tergetObject = hit.transform.gameObject;
             _hitPositions.Add(hit.point);
             isCutting = true;
@@ -59,6 +60,7 @@ public class MeshCutRun : MonoBehaviour
     {
         //切断面の中心を計算
         Vector3 centerPos = (startPos + endPos) / TWO;
+        
 
 
         //法線ベクトル計算
