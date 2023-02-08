@@ -283,8 +283,8 @@ public class MeshCut : MonoBehaviour
         }
         victim.GetComponent<MeshCollider>().sharedMesh = left_HalfMesh;
         // ＠アセットによるポリゴン削減
-        victim.AddComponent<OptimizeMesh>()._quality = 0.15f;
-        victim.GetComponent<OptimizeMesh>().DecimateMesh();
+        victim.AddComponent<MeshSimplify>().m_fVertexAmount = 20f;
+        victim.GetComponent<MeshSimplify>();
 
         // 左側のオブジェクトはそのままコピー
         GameObject leftSideObj = victim;
@@ -292,7 +292,7 @@ public class MeshCut : MonoBehaviour
         
 
         // 右側のオブジェクトは新規作成してコンポーネントを指定
-        GameObject rightSideObj = new GameObject("right side", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider), typeof(OptimizeMesh));//
+        GameObject rightSideObj = new GameObject("right side", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));// ,typeof(OptimizeMesh)
         rightSideObj.transform.position = victim.transform.position;
         rightSideObj.transform.rotation = victim.transform.rotation;
         rightSideObj.transform.localScale = victim.transform.localScale;
@@ -301,8 +301,8 @@ public class MeshCut : MonoBehaviour
         rightSideObj.GetComponent<MeshCollider>().sharedMesh = right_HalfMesh;
         rightSideObj.GetComponent<MeshCollider>().convex = true;
         // ＠アセットによるポリゴン削減
-        victim.AddComponent<OptimizeMesh>()._quality = 0.15f;
-        victim.GetComponent<OptimizeMesh>().DecimateMesh();
+        //rightSideObj.GetComponent<OptimizeMesh>()._quality = 0.15f;
+        //rightSideObj.GetComponent<OptimizeMesh>().DecimateMesh();
         // 元のオブジェクトにRigidbodyがついているか
         if (victim.GetComponent<Rigidbody>())
         {
