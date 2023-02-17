@@ -40,7 +40,7 @@ public class MeshCut : MonoBehaviour
         /// <param name="peak1">頂点1</param>
         /// <param name="peak2">頂点2</param>
         /// <param name="peak3">頂点3</param>
-        /// <param name="submesh">対象のサブメシュ</param>
+        /// <param name="submesh">対象のサブメシュ(単一の Material を使用してレンダリングされる三角形のリスト)</param>
         public void AddTriangle(int peak1, int peak2, int peak3, int submesh)
         {
             // 三角形のインデックス順は 1,2,3,4....
@@ -69,7 +69,7 @@ public class MeshCut : MonoBehaviour
             normals.Add(victim_mesh.normals[peak2]);
             normals.Add(victim_mesh.normals[peak3]);
 
-            // 同様に、UVも。
+            // 同様に、対象オブジェクトのUV配列からUVを取得し設定する
             uvs.Add(victim_mesh.uv[peak1]);
             uvs.Add(victim_mesh.uv[peak2]);
             uvs.Add(victim_mesh.uv[peak3]);
@@ -132,9 +132,7 @@ public class MeshCut : MonoBehaviour
     const int PEAK_ONE = 1;
     const int PEAK_TWO = 2;
 
-    //カット面分の
-
-    //
+    // 左右それぞれのメッシュクラス
     private MeshCutSide left_side = new MeshCutSide();
     private MeshCutSide right_side = new MeshCutSide();
 
@@ -154,13 +152,17 @@ public class MeshCut : MonoBehaviour
     /// <param name="capMaterial">切断面のマテリアル</param>
     public GameObject[] Cut(GameObject victim, Vector3 anchorPoint, Vector3 normalDirection, Material capMaterial)
     {
+        print("MeshCut:法線" + victim.transform.InverseTransformDirection(normalDirection));
         // victimから相対的な平面（ブレード）をセット
         // 具体的には、対象オブジェクトのローカル座標での平面の法線と位置から平面を生成する
         blade = new Plane(
             // ローカル座標に変換
             victim.transform.InverseTransformDirection(-normalDirection),
             victim.transform.InverseTransformPoint(anchorPoint)
+
         );
+        Debug.DrawRay(anchorPoint, victim.transform.InverseTransformDirection(blade.normal) * 20, Color.blue, 100);
+        Debug.DrawRay(anchorPoint, blade.normal * 20, Color.yellow, 100);
         // 対象のメッシュを取得
         victim_mesh = victim.GetComponent<MeshFilter>().mesh;
 
@@ -614,9 +616,6 @@ public class MeshCut : MonoBehaviour
             newUV2.x = 0.5f + Vector3.Dot(displacement, left);
             newUV2.y = 0.5f + Vector3.Dot(displacement, upward);
             newUV2.z = 0.5f + Vector3.Dot(displacement, blade.normal);
-
-            // uvs.Add(new Vector2(relativePosition.x, relativePosition.y));
-            // normals.Add(blade.normal);
 
             // 左側のポリゴンとして、求めたUVを利用してトライアングルを追加
             left_side.AddNewTriangle(

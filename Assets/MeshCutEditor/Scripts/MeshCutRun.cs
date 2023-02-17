@@ -7,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public class MeshCutRun : MonoBehaviour
 {
+    [SerializeField] private GameObject p = default;//@
+
     //MeshCutクラス
     private MeshCut _meshCut = default;
     //カットするオブジェクト
@@ -21,11 +23,15 @@ public class MeshCutRun : MonoBehaviour
     private bool isCutting = false;
     //リストの最後尾を調整する
     const int LIST_END = -1;
-Vector3 normal = default;
+
+
+Vector3 normal = default;//@
+    Vector3 center = default;
 
     void Start()
     {
         _meshCut = new MeshCut();
+        //_meshCut.Cut(p, p.transform.position, Vector3.up, _material);
     }
     void Update()
     {
@@ -37,24 +43,25 @@ Vector3 normal = default;
         {
             _tergetObject = hit.transform.gameObject;
             _hitPositions.Add(hit.point);
+            //_hitPositions.Add(hit.transform.InverseTransformPoint(hit.point));
             isCutting = true;
         }
         else if (Input.GetMouseButton(0) && isCutting)
         {
             //Cutに渡す切断面の中心
-            Vector3 center = CalculationNormal(_hitPositions[0], _hitPositions[_hitPositions.Count + LIST_END]).center;
+            center = CalculationNormal(_hitPositions[0], _hitPositions[_hitPositions.Count + LIST_END]).center;
             //Cutに渡す法線ベクトル
             normal = CalculationNormal(_hitPositions[0], _hitPositions[_hitPositions.Count + LIST_END]).normal;
             _meshCut.Cut(_tergetObject, center, normal, _material);
-            print(normal);
+            print("MeshCutRun:法線" + normal);
             //リストの初期化
             _hitPositions.Clear();
             isCutting = false;
         }
-        Debug.DrawRay(_tergetObject.transform.position, normal * 20f, Color.blue);
-        Debug.DrawRay(centerRay.origin, centerRay.direction * 10, Color.black);
+        Debug.DrawRay(center, -normal * 20f, Color.blue);
+        Debug.DrawRay(centerRay.origin, centerRay.direction * 20f, Color.black);
     }
-    Ray centerRay;
+    Ray centerRay;//@デバッグのためフィールド化
     /// <summary>
     /// 法線ベクトルを計算するメソッド
     /// </summary>
@@ -63,39 +70,39 @@ Vector3 normal = default;
     /// <returns>法線ベクトル</returns>
     private (Vector3 normal, Vector3 center) CalculationNormal(Vector3 startPos, Vector3 endPos)
     {
-        // 2値を割るための変数
+        // 2で割るための変数
         const int TWO = 2;
-        // 3値を割るための変数
+        // 3で割るための変数
         const int THREE = 3;
         // 原点となるカメラのポジション
         Vector3 cameraPos = Camera.main.transform.position;
 
-        // 辺の中央を求める
+        // 面の中心の計算
+        // 辺(startPos-endPos)の中央を求める
         Vector3 centerPosDirection = (startPos + endPos) / TWO;
-        // オブジェクトの反対側から辺の中央にRayを出す
+        // カメラから辺の中央にRayを出す
         centerRay = new Ray(cameraPos, (centerPosDirection - cameraPos).normalized);
-        // オブジェクトの反対側の頂点
+        // 中央の頂点
         Vector3 otherSidePos = default;
         if(Physics.Raycast(centerRay, out hit, 20f))
         {
             otherSidePos = hit.point;
         }
-
-        //法線ベクトル計算
-        //原点から始点の方向
-        Vector3 startDirection = (startPos - otherSidePos);
-        //原点から終点の方向
-        Vector3 endDirection = (endPos - otherSidePos);
-
-        //切断面の中心を計算
+        // 切断面の中心を計算
         Vector3 centerPos = (startPos + endPos + otherSidePos) / THREE;
 
-        print("スタート" + startPos);
-        print("エンド" + endPos);
-        print("頂点" + otherSidePos);
 
-        print("中心" + centerPos);
+        // 法線ベクトル計算
+        // 原点から始点の方向
+        Vector3 startDirection = (startPos - cameraPos);
+        // 原点から終点の方向
+        Vector3 endDirection = (endPos - cameraPos);
+        // 面の法線
+        Vector3 normalDirection = Vector3.Cross(startDirection, endDirection);
 
-        return (Vector3.Cross(startDirection, endDirection), centerPos);
+        print("開始"+startPos);
+        print("終了"+endPos);
+
+        return (normalDirection, centerPos);
     }
 }
