@@ -53,6 +53,7 @@ Vector3 normal = default;//@
             //Cutに渡す法線ベクトル
             normal = CalculationNormal(_hitPositions[0], _hitPositions[_hitPositions.Count + LIST_END]).normal;
             _meshCut.Cut(_tergetObject, center, normal, _material);
+            //MeshCut.CutMesh(_tergetObject, center, normal, true, _material);
             print("MeshCutRun:法線" + normal);
             //リストの初期化
             _hitPositions.Clear();
