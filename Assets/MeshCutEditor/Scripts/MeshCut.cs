@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 旧メッシュ切断クラス
+/// </summary>
 public class MeshCut : MonoBehaviour
 {
     public class MeshCutSide

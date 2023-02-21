@@ -31,7 +31,6 @@ Vector3 normal = default;//@
     void Start()
     {
         _meshCut = new MeshCut();
-        //_meshCut.Cut(p, p.transform.position, Vector3.up, _material);
     }
     void Update()
     {
@@ -52,8 +51,9 @@ Vector3 normal = default;//@
             center = CalculationNormal(_hitPositions[0], _hitPositions[_hitPositions.Count + LIST_END]).center;
             //Cutに渡す法線ベクトル
             normal = CalculationNormal(_hitPositions[0], _hitPositions[_hitPositions.Count + LIST_END]).normal;
-            _meshCut.Cut(_tergetObject, center, normal, _material);
+            //_meshCut.Cut(_tergetObject, center, normal, _material);
             //MeshCut.CutMesh(_tergetObject, center, normal, true, _material);
+            //NewMeshCut.CutObject(_tergetObject, center, normal, true, _material);
             print("MeshCutRun:法線" + normal);
             //リストの初期化
             _hitPositions.Clear();
