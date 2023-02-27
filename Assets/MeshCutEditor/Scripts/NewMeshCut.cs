@@ -11,12 +11,13 @@ public class NewMeshCut : MonoBehaviour
     static Mesh _targetMesh;
 
     // 参照渡し防止のため配列であらかじめ宣言
+    //この3つはめっちゃ大事でこれ書かないと10倍くらい重くなる(for文中で使うから参照渡しだとやばい)
     // 切断対象のメッシュの頂点(ポリゴン)
     static Vector3[] _targetVertices;
     // 切断対象のメッシュの法線
     static Vector3[] _targetNormals;
     // 切断対象のメッシュのUV
-    static Vector2[] _targetUVs;   //この3つはめっちゃ大事でこれ書かないと10倍くらい重くなる(for文中で使うから参照渡しだとやばい)
+    static Vector2[] _targetUVs;   
 
     //平面の方程式はn・r=h(nは法線,rは位置ベクトル,hはconst(=_planeValue))
     static Vector3 _planeNormal; //nの部分
@@ -33,9 +34,10 @@ public class NewMeshCut : MonoBehaviour
     // 頂点の向きを管理する連想配列
     static Dictionary<int, (int, int)> newVertexDic = new Dictionary<int, (int, int)>(101);
 
-    // @
+    // FragmentListクラスの参照
     static FragmentList fragmentList = new FragmentList();
-    // @
+
+    // RoopFragmentCallectionクラスの参照
     static RoopFragmentCollection roopCollection = new RoopFragmentCollection();
 
     // 正面側の頂点
@@ -57,7 +59,8 @@ public class NewMeshCut : MonoBehaviour
     static List<List<int>> _backSubmeshIndices = new List<List<int>>();
 
     /// <summary>
-    /// <para>gameObjectを切断して2つのMeshにして返します</para>
+    /// NewMeshCutクラス内で呼び出されるメソッド
+    /// <para>メッシュを切断して2つのMeshにして返します</para>
     /// <para>何度も切るようなオブジェクトでも頂点数が増えないように処理をしてあるほか, 簡単な物体なら切断面を縫い合わせることもできます</para>
     /// </summary>
     /// <param name="targetMesh">切断するMesh</param>
@@ -113,8 +116,6 @@ public class NewMeshCut : MonoBehaviour
         Vector3 scale = targetTransform.localScale;
         _planeNormal = Vector3.Scale(scale, targetTransform.InverseTransformDirection(planeNormalDirection)).normalized;
         #endregion
-
-
 
         #region 最初に頂点の情報だけを入力していく
 
@@ -226,7 +227,7 @@ public class NewMeshCut : MonoBehaviour
         }
         #endregion
 
-        //切断されたポリゴンはここでそれぞれのMeshに追加される
+        // 切断されたポリゴンはここでそれぞれのMeshに追加される
         fragmentList.MakeTriangle();
 
         if (makeCutSurface)
@@ -276,7 +277,8 @@ public class NewMeshCut : MonoBehaviour
     }
 
     /// <summary>
-    /// Meshを切断します
+    /// 外のクラスから呼び出すメソッド
+    /// GameObjectを切断して２つのGameObjectを返す
     /// </summary>
     /// <param name="targetGameObject">切断されるGameObject</param>
     /// <param name="planeAnchorPoint">切断平面上のどこか1点(ワールド座標)</param>
@@ -284,7 +286,7 @@ public class NewMeshCut : MonoBehaviour
     /// <param name="makeCutSurface">切断面を作るかどうか</param>
     /// <param name="cutSurfaceMaterial">切断面に割り当てるマテリアル(nullの場合は適当なマテリアルを割り当てる)</param>
     /// <returns>copy_normalsideが法線の向いている方向で新しくInstantiateしたもの,original_anitiNormalsideが法線と反対方向で入力したもの</returns>
-    public static (GameObject copy_normalside, GameObject original_anitiNormalside) CutMesh(GameObject targetGameObject, Vector3 planeAnchorPoint, Vector3 planeNormalDirection, bool makeCutSurface = true, Material cutSurfaceMaterial = null)
+    public static (GameObject copy_normalside, GameObject original_anitiNormalside) CutGameObject(GameObject targetGameObject, Vector3 planeAnchorPoint, Vector3 planeNormalDirection, bool makeCutSurface = true, Material cutSurfaceMaterial = null)
     {
         if (!targetGameObject.GetComponent<MeshFilter>())
         {
@@ -483,7 +485,7 @@ public class NewMeshCut : MonoBehaviour
         Vector3 cutLine = (newVertexPos1 - newVertexPos0).normalized;
         int KEY_CUTLINE = MakeIntFromVector3_ErrorCut(cutLine);//Vector3だと処理が重そうなのでintにしておく, ついでに丸め誤差を切り落とす
 
-        //切断情報を含んだFragmentクラス
+        //切断情報を含んだFragmentクラスからメソッドを呼び出す
         Fragment fragment = new Fragment(vertex0, vertex1, twoPointsInFrontSide, KEY_CUTLINE, submesh);
         //Listに追加してListの中で同一平面のFragmentは結合とかする
         fragmentList.Add(fragment, KEY_CUTLINE);
@@ -1024,7 +1026,7 @@ public class NewMeshCut : MonoBehaviour
     public class FragmentList
     {
 
-        //同じ切断辺をもったFragmentをリストにまとめる
+        // 同じ切断辺をもったFragmentをリストにまとめる
         Dictionary<int, List<Fragment>> cutLineDictionary = new Dictionary<int, List<Fragment>>();
 
         /// <summary>
@@ -1112,7 +1114,7 @@ public class NewMeshCut : MonoBehaviour
             }
         }
         /// <summary>
-        /// 
+        /// 切断されたポリゴンをそれぞれのMeshに追加
         /// </summary>
         public void MakeTriangle()
         {
