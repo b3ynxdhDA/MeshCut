@@ -11,7 +11,7 @@ public class NewMeshCut : MonoBehaviour
     static Mesh _targetMesh;
 
     // 参照渡し防止のため配列であらかじめ宣言
-    //この3つはめっちゃ大事でこれ書かないと10倍くらい重くなる(for文中で使うから参照渡しだとやばい)
+    // @この3つはめっちゃ大事でこれ書かないと10倍くらい重くなる(for文中で使うから参照渡しだとやばい)
     // 切断対象のメッシュの頂点(ポリゴン)
     static Vector3[] _targetVertices;
     // 切断対象のメッシュの法線
@@ -137,7 +137,7 @@ public class NewMeshCut : MonoBehaviour
             for (int i = 0; i < _targetVertices.Length; i++)
             {
                 Vector3 pos = _targetVertices[i];
-                //planeの表側にあるか裏側にあるかを判定
+                // 頂点がplaneの表側にあるか裏側にあるかを判定
                 if (_isFront[i] = (planeNormal_x * (pos.x - anchor_x) +
                     planeNormal_y * (pos.y - ancy) +
                     planeNormal_z * (pos.z - anchor_z)) > 0)
@@ -160,7 +160,7 @@ public class NewMeshCut : MonoBehaviour
                 }
             }
 
-            //片側に全部寄った場合はここで終了
+            // 片側に全部寄った場合はここで終了
             if (frontCount == 0 || backCount == 0)
             {
                 return (null, null);
@@ -251,6 +251,7 @@ public class NewMeshCut : MonoBehaviour
         frontMesh.normals = _frontNormals.ToArray();
         frontMesh.uv = _frontUVs.ToArray();
 
+        // サブメッシュのカウントを進める
         frontMesh.subMeshCount = _frontSubmeshIndices.Count;
         for (int i = 0; i < _frontSubmeshIndices.Count; i++)
         {
@@ -265,6 +266,7 @@ public class NewMeshCut : MonoBehaviour
         backMesh.normals = _backNormals.ToArray();
         backMesh.uv = _backUVs.ToArray();
 
+        // サブメッシュのカウントを進める
         backMesh.subMeshCount = _backSubmeshIndices.Count;
         for (int i = 0; i < _backSubmeshIndices.Count; i++)
         {
@@ -288,11 +290,13 @@ public class NewMeshCut : MonoBehaviour
     /// <returns>copy_normalsideが法線の向いている方向で新しくInstantiateしたもの,original_anitiNormalsideが法線と反対方向で入力したもの</returns>
     public static (GameObject copy_normalside, GameObject original_anitiNormalside) CutGameObject(GameObject targetGameObject, Vector3 planeAnchorPoint, Vector3 planeNormalDirection, bool makeCutSurface = true, Material cutSurfaceMaterial = null)
     {
+        // 切断対象にMeshFilterがアタッチされているか
         if (!targetGameObject.GetComponent<MeshFilter>())
         {
             Debug.LogError("引数のオブジェクトにはMeshFilterをアタッチしろ!");
             return (null, null);
         }
+        // 切断対象にMeshRendererがアタッチされているか
         else if (!targetGameObject.GetComponent<MeshRenderer>())
         {
             Debug.LogError("引数のオブジェクトにはMeshrendererをアタッチしろ!");
@@ -306,10 +310,12 @@ public class NewMeshCut : MonoBehaviour
 
         MeshRenderer renderer = targetGameObject.GetComponent<MeshRenderer>();
         //materialにアクセスするとその瞬間にmaterialの個別のインスタンスが作られてマテリアル名に(instance)がついてしまうので読み込みはsharedMaterialで行う
-        Material[] mats = renderer.sharedMaterials;
+        Material[] materials = renderer.sharedMaterials;
+        // 切断面を埋めるか && 切断面に新しいマテリアルを設定するか
         if (makeCutSurface && cutSurfaceMaterial != null)
         {
-            if (mats[mats.Length - 1]?.name == cutSurfaceMaterial.name)//すでに切断マテリアルが追加されているときはそれを使うので追加しない
+            // すでに切断マテリアルが追加されているときはそれを使うので追加しない
+            if (materials[materials.Length - 1]?.name == cutSurfaceMaterial.name)
             {
                 addNewMaterial = false;
             }
@@ -331,11 +337,12 @@ public class NewMeshCut : MonoBehaviour
             return (null, null);
 
         }
+        // 新しいマテリアルを追加するか
         if (addNewMaterial)
         {
-            int matLength = mats.Length;
+            int matLength = materials.Length;
             Material[] newMats = new Material[matLength + 1];
-            mats.CopyTo(newMats, 0);
+            materials.CopyTo(newMats, 0);
             newMats[matLength] = cutSurfaceMaterial;
 
 
@@ -344,7 +351,12 @@ public class NewMeshCut : MonoBehaviour
 
         // 元のオブジェクトのメッシュを切断面に対して裏側のメッシュに変える
         targetGameObject.GetComponent<MeshFilter>().mesh = originMesh;
-
+        // 切れたオブジェクトが地面に着くと消えるスクリプトをアタッチ
+        if (targetGameObject.GetComponent<DestroyObject>() == null)
+        {
+            targetGameObject.AddComponent<DestroyObject>();
+        }
+        
         // 切断面に対して表側のメッシュのオブジェクトを生成
         Transform originTransform = targetGameObject.transform;
         GameObject fragment = Instantiate(targetGameObject, originTransform.position, originTransform.rotation, originTransform.parent);
@@ -352,9 +364,10 @@ public class NewMeshCut : MonoBehaviour
         fragment.GetComponent<MeshFilter>().mesh = fragMesh;
         fragment.GetComponent<MeshRenderer>().sharedMaterials = targetGameObject.GetComponent<MeshRenderer>().sharedMaterials;
 
+        // 切断対象のオブジェクトにMeshColliderがついているか
         if (targetGameObject.GetComponent<MeshCollider>())
         {
-            //頂点が1点に重なっている場合にはエラーが出るので, 直したい場合はmesh.RecalculateBoundsのあとでmesh.bounds.size.magnitude<0.00001などで条件分けして対処してください
+            // 頂点が1点に重なっている場合にはエラーが出るので, 直したい場合はmesh.RecalculateBoundsのあとでmesh.bounds.size.magnitude<0.00001などで条件分けして対処してください
             targetGameObject.GetComponent<MeshCollider>().sharedMesh = originMesh;
             fragment.GetComponent<MeshCollider>().sharedMesh = fragMesh;
         }
@@ -472,14 +485,12 @@ public class NewMeshCut : MonoBehaviour
         // Lerpで切断によってうまれる新しい頂点の座標を生成
         Vector3 newVertexPos0 = Vector3.Lerp(frontPoint0, backPoint0, dividingParameter0);
 
-
         float dividingParameter1 = (_planeValue - Vector3.Dot(_planeNormal, frontPoint1)) / (Vector3.Dot(_planeNormal, backPoint1 - frontPoint1));
         Vector3 newVertexPos1 = Vector3.Lerp(frontPoint1, backPoint1, dividingParameter1);
 
         // 新しい頂点の生成, ここではNormalとUVは計算せず後から計算できるように頂点のindex(_trackedArray[frontLeft], _trackedArray[backLeft],)と内分点の情報(dividingParameter0)を持っておく
         NewVertex vertex0 = new NewVertex(_trackedArray[frontLeft], _trackedArray[backLeft], dividingParameter0, newVertexPos0);
         NewVertex vertex1 = new NewVertex(_trackedArray[frontRight], _trackedArray[backRight], dividingParameter1, newVertexPos1);
-
 
         //切断でできる辺(これが同じポリゴンは後で結合して頂点数の増加を抑える)
         Vector3 cutLine = (newVertexPos1 - newVertexPos0).normalized;
@@ -519,9 +530,9 @@ public class NewMeshCut : MonoBehaviour
         public Vector3 startPos = default;
         // ループの右側のPosition
         public Vector3 endPos = default;
-        //含まれる頂点数(ループが閉じるまでは頂点数-1の値になる)
+        // 含まれる頂点数(ループが閉じるまでは頂点数-1の値になる)
         public int verticesCount;
-        //Positionの和.これをcountで割ると図形の中点が得られる
+        // Positionの和.これをcountで割ると図形の中点が得られる
         public Vector3 sum_rightPosition;
         /// <summary>
         /// 
@@ -542,7 +553,7 @@ public class NewMeshCut : MonoBehaviour
         }
     }
     /// <summary>
-    /// 切断面の重なっている頂点に関する処理
+    /// 切断面に重なっている頂点に関する処理
     /// </summary>
     public class RoopFragmentCollection
     {
@@ -556,13 +567,13 @@ public class NewMeshCut : MonoBehaviour
         /// <param name="rightVertexPos">切断辺の右の点のPosition</param>
         public void Add(Vector3 leftVertexPos, Vector3 rightVertexPos)
         {
-            //新しいループ辺を作る
+            // 新しいループ辺を作る
             RoopFragment target = new RoopFragment(rightVertexPos);
 
 
             RooP roop1 = null;
             bool find1 = default;
-            //自分の左手とくっつくのは相手の右手なので右手disctionaryの中に既にleftVertexPosのkeyが入っていないかチェック
+            // 自分の左手とくっつくのは相手の右手なので右手disctionaryの中に既にleftVertexPosのkeyが入っていないかチェック
             if (find1 = rightPointDic.ContainsKey(leftVertexPos))
             {
                 roop1 = rightPointDic[leftVertexPos];
@@ -580,10 +591,11 @@ public class NewMeshCut : MonoBehaviour
             RooP roop2 = null;
             bool find2 = default;
 
+            // 自分の右手とくっつくのは相手の左手なので左手disctionaryの中に既にrightVertexPosのkeyが入っていないかチェック
             if (find2 = leftPointDic.ContainsKey(rightVertexPos))
             {
                 roop2 = leftPointDic[rightVertexPos];
-                //roop1==roop2のとき, roopが完成したのでreturn
+                // roop1==roop2のとき, roopが完成したのでreturn
                 if (roop1 == roop2)
                 {
                     roop1.verticesCount++;
@@ -591,9 +603,9 @@ public class NewMeshCut : MonoBehaviour
                     return;
                 }
 
-                //targetの右にroop2の左端(始端)をくっつける
+                // targetの右にroop2の左端(始端)をくっつける
                 target.next = roop2.start;
-                //roop2の左端をtargetに変更
+                // roop2の左端をtargetに変更
                 roop2.start = target;
                 roop2.startPos = leftVertexPos;
 
@@ -601,10 +613,10 @@ public class NewMeshCut : MonoBehaviour
                 leftPointDic.Remove(rightVertexPos);
             }
 
-
+             // 
             if (find1)
             {
-                //2つのroopがくっついたとき 
+                // 2つのroopがくっついたとき 
                 if (find2)
                 {
                     //roop1+target+roop2の順でつながっているはずなのでroop1にroop2の情報を追加する
@@ -652,7 +664,7 @@ public class NewMeshCut : MonoBehaviour
             }
         }
         /// <summary>
-        /// 
+        /// 切断面をつくる
         /// </summary>
         /// <param name="submesh"></param>
         /// <param name="targetTransform"></param>
@@ -726,7 +738,7 @@ public class NewMeshCut : MonoBehaviour
 
                 }
 
-                //roopFragmentのnextをたどっていくことでroopを一周できる
+                // roopFragmentのnextをたどっていくことでroopを一周できる
 
                 // 切断面の中心に頂点を追加して頂点番号を返す
                 MakeVertex(roop.sum_rightPosition / roop.verticesCount, out int center_f, out int center_b);
@@ -800,21 +812,22 @@ public class NewMeshCut : MonoBehaviour
         }
     }
     /// <summary>
-    /// 切断片に関するクラス
+    /// 切断面を跨ぐ頂点に関するクラス
     /// </summary>
     public class Fragment
     {
+        // 切断面と重なっている新しい頂点
         public NewVertex vertex0 = default;
         public NewVertex vertex1 = default;
         public int KEY_CUTLINE;
-        //submesh番号(どのマテリアルを当てるか)
+        // submesh番号(どのマテリアルを当てるか)
         public int submesh;
-        //ポリゴンの4つ(3つ)の頂点の情報
+        // ポリゴンの4つ(3つ)の頂点の情報
         public Point firstPoint_f = default;
         public Point lastPoint_f = default;
         public Point firstPoint_b = default;
         public Point lastPoint_b = default;
-        //front側,back側の頂点数
+        // front側,back側の頂点数
         public int count_f;
         public int count_b;
 
@@ -833,6 +846,7 @@ public class NewMeshCut : MonoBehaviour
             KEY_CUTLINE = _KEY_CUTLINE;
             submesh = _submesh;
 
+            // 切断面の表側に頂点が2つある場合
             if (_twoPointsInFrontSide)
             {
                 firstPoint_f = new Point(_vertex0.frontsideindex_of_frontMesh);
@@ -1008,7 +1022,7 @@ public class NewMeshCut : MonoBehaviour
         }
     }
     /// <summary>
-    /// 
+    /// Fragmentクラスで使われる頂点情報のポインタ
     /// </summary>
     public class Point
     {
