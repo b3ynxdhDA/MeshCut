@@ -8,13 +8,12 @@ public class Move : MonoBehaviour
     private Rigidbody _rigidbody = default;
     void Start()
     {
-        print("Žn‚Ü‚è");
         _rigidbody = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        _rigidbody.AddForce(Vector3.one);
+        _rigidbody.AddForce(Vector3.back);
         
     }
 }

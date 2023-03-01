@@ -287,9 +287,7 @@ public class MeshCut : MonoBehaviour
             victim.AddComponent<MeshCollider>().convex = true;
         }
         victim.GetComponent<MeshCollider>().sharedMesh = left_HalfMesh;
-        // ＠アセットによるポリゴン削減
-        victim.AddComponent<MeshSimplify>().m_fVertexAmount = 20f;
-        victim.GetComponent<MeshSimplify>();
+        
 
         // 左側のオブジェクトはそのままコピー
         GameObject leftSideObj = victim;
