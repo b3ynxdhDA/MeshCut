@@ -369,14 +369,26 @@ public class NewMeshCut : MonoBehaviour
             fragment.GetComponent<Rigidbody>().velocity = targetGameObject.GetComponent<Rigidbody>().velocity;
         }
 
-
-        // 切断対象のオブジェクトにMeshColliderがついているか
-        if (targetGameObject.GetComponent<MeshCollider>())
+        // 切断対象のオブジェクトにコライダーがついているか
+        if (targetGameObject.GetComponent<Collider>())
         {
-            // 頂点が1点に重なっている場合にはエラーが出るので, 直したい場合はmesh.RecalculateBoundsのあとでmesh.bounds.size.magnitude<0.00001などで条件分けして対処してください
-            targetGameObject.GetComponent<MeshCollider>().sharedMesh = originMesh;
-            fragment.GetComponent<MeshCollider>().sharedMesh = fragMesh;
+            // 切断対象のオブジェクトにMeshColliderがついているか
+            if (targetGameObject.GetComponent<MeshCollider>())
+            {
+                // 頂点が1点に重なっている場合にはエラーが出るので, 直したい場合はmesh.RecalculateBoundsのあとでmesh.bounds.size.magnitude<0.00001などで条件分けして対処してください
+                targetGameObject.GetComponent<MeshCollider>().sharedMesh = originMesh;
+                fragment.GetComponent<MeshCollider>().sharedMesh = fragMesh;
+            }
+            // MeshCollider以外のColliderの場合は
+            else
+            {
+                Destroy(targetGameObject.GetComponent<Collider>());
+                Destroy(fragment.GetComponent<Collider>());
+                targetGameObject.AddComponent<MeshCollider>().sharedMesh = originMesh;
+                fragment.AddComponent<MeshCollider>().sharedMesh = fragMesh;
+            }
         }
+
 
         return (fragment, targetGameObject);
     }

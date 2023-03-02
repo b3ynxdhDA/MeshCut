@@ -1,38 +1,57 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 切断されたオブジェクトが地面に接触したら消滅させる
+/// </summary>
 public class DestroyObject : MonoBehaviour
 {
-    // 接地判定
-    private bool _isGround = false;
-    // Rayの発射地点
-    private Vector3 _rayPosition = default;
-    // 接地判定のRayの長さ
-    private float _chechGroundDistance = 1f;
     // Rayが衝突するLayerMask
-    private int _hitLayer = 3;
+    const int _GROUND_LAYER = 1 << 9;
     // 削除のディレイ
     const float _DESTROY_DELAY = 3f;
+    // オブジェクトのマテリアルの番号(複数の場合)
+    private int _number = 0;
 
-    void Start()
+    private void OnCollisionEnter(Collision collision)
     {
-        _chechGroundDistance = this.transform.lossyScale.y * 0.8f;
-    }
-
-    void Update()
-    {
-        // メッシュの中心を取得
-        _rayPosition = GetComponent<MeshRenderer>().bounds.center;
-
-        Debug.DrawRay(_rayPosition, Vector3.down * _chechGroundDistance, Color.red);
-        // オブジェクトが地面に着いたら
-        if (!_isGround && Physics.Raycast(new Ray(_rayPosition, Vector3.down), _chechGroundDistance, _hitLayer))
+        // GrandLayerに接触したら
+        if ((1 << collision.gameObject.layer) == _GROUND_LAYER)
         {
-            print("ですとろい");
-
-            _isGround = true;
+            StartCoroutine("Transparent");
             Destroy(this.gameObject, _DESTROY_DELAY);
         }
+    }
+    /// <summary>
+    /// オブジェクトを徐々に消すコルーチン
+    /// フェードに時間がかかるので再帰処理
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator Transparent()
+    {
+        // マテリアルのRenderingModeをFadeに変える
+        Material fadeMaterial = GetComponent<MeshRenderer>().materials[_number];
+        fadeMaterial.SetFloat("_Mode", 2);
+        fadeMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        fadeMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        fadeMaterial.SetInt("_ZWrite", 0);
+        fadeMaterial.DisableKeyword("_ALPHATEST_ON");
+        fadeMaterial.EnableKeyword("_ALPHABLEND_ON");
+        fadeMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+
+        _number++;
+        // マテリアルが複数ある場合の次のマテリアルのフェードを開始
+        if (_number < GetComponent<MeshRenderer>().materials.Length)
+        {
+            StartCoroutine("Transparent");
+        }
+
+        // マテリアルの透明度を徐々に下げる
+        for (int i = 0; i < 255; i++)
+        {
+            fadeMaterial.color = fadeMaterial.color - new Color32(0, 0, 0, 1);
+            yield return new WaitForSeconds(0.01f);
+        }
+
     }
 }
