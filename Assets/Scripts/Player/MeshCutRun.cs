@@ -29,8 +29,8 @@ public class MeshCutRun : MonoBehaviour
     const int _LIST_END = -1;
     // 切断できるLayerMask
     const int _CUT_LAYER_MASK = 1 << 8;
-    // 切断したオブジェクト同士の間隔をあける力
-    const int _CUT_DIVISION_FORCE = 3;
+    [SerializeField, Range(1,10), Header("@切断したオブジェクト同士の間隔をあける力")]
+    private int _CUT_DIVISION_FORCE = 3;
     // centerPosを取るためのRayの長さ
     const float _CENTER_RAY_RANGE = 20f;
     #endregion
@@ -61,8 +61,8 @@ public class MeshCutRun : MonoBehaviour
                 if (_frontObject && _tergetObject.GetComponent<Rigidbody>())
                 {
                     // 切断したオブジェクトの間隔を開ける
-                    _frontObject.GetComponent<Rigidbody>().AddForce(-normal * _CUT_DIVISION_FORCE);
-                    _backObject.GetComponent<Rigidbody>().AddForce(normal * _CUT_DIVISION_FORCE);
+                    _frontObject.GetComponent<Rigidbody>().AddForce(-normal * _CUT_DIVISION_FORCE, ForceMode.Impulse);
+                    _backObject.GetComponent<Rigidbody>().AddForce(normal * _CUT_DIVISION_FORCE, ForceMode.Impulse);
                 }
 
                 //リストの初期化
