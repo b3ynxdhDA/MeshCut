@@ -351,7 +351,7 @@ public class NewMeshCut : MonoBehaviour
 
         // 元のオブジェクトのメッシュを切断面に対して裏側のメッシュに変える
         targetGameObject.GetComponent<MeshFilter>().mesh = originMesh;
-        // 切れたオブジェクトが地面に着くと消えるスクリプトをアタッチ
+        // 切れたオブジェクトが地面に着くと消えるスクリプトがついていなかったら
         if (targetGameObject.GetComponent<DestroyObject>() == null)
         {
             targetGameObject.AddComponent<DestroyObject>();
@@ -382,10 +382,15 @@ public class NewMeshCut : MonoBehaviour
             // MeshCollider以外のColliderの場合は
             else
             {
+                // 既にあるコライダーを削除する
                 Destroy(targetGameObject.GetComponent<Collider>());
                 Destroy(fragment.GetComponent<Collider>());
+                // MeshColliderをメッシュを入れてアタッチ
                 targetGameObject.AddComponent<MeshCollider>().sharedMesh = originMesh;
                 fragment.AddComponent<MeshCollider>().sharedMesh = fragMesh;
+                // MeshColliderのconvexをTrueにする
+                targetGameObject.GetComponent<MeshCollider>().convex = true;
+                fragment.GetComponent<MeshCollider>().convex = true;
             }
         }
 

@@ -6,20 +6,25 @@ using UnityEngine;
 /// </summary>
 public class DestroyObject : MonoBehaviour
 {
+    // 変数宣言--------------------------
+    // MeshRendererのマテリアルの番号(複数の場合)
+    private int _materialNumber = 0;
+    // 接地判定
+    private bool _isGround = false;
+
+    // 定数宣言------------------------
     // Rayが衝突するLayerMask
     const int _GROUND_LAYER = 1 << 9;
     // 削除のディレイ
     const float _DESTROY_DELAY = 3f;
-    // オブジェクトのマテリアルの番号(複数の場合)
-    private int _number = 0;
 
     private void OnCollisionEnter(Collision collision)
     {
         // GrandLayerに接触したら
-        if ((1 << collision.gameObject.layer) == _GROUND_LAYER)
+        if (!_isGround && (1 << collision.gameObject.layer) == _GROUND_LAYER)
         {
+            _isGround = true;
             StartCoroutine("Transparent");
-            Destroy(this.gameObject, _DESTROY_DELAY);
         }
     }
     /// <summary>
@@ -29,8 +34,11 @@ public class DestroyObject : MonoBehaviour
     /// <returns></returns>
     IEnumerator Transparent()
     {
+        //print(_materialNumber);
         // マテリアルのRenderingModeをFadeに変える
-        Material fadeMaterial = GetComponent<MeshRenderer>().materials[_number];
+        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+
+        Material fadeMaterial = meshRenderer.materials[_materialNumber];
         fadeMaterial.SetFloat("_Mode", 2);
         fadeMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
         fadeMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
@@ -39,9 +47,11 @@ public class DestroyObject : MonoBehaviour
         fadeMaterial.EnableKeyword("_ALPHABLEND_ON");
         fadeMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
 
-        _number++;
+        // マテリアルの番号を+1する
+        _materialNumber++;
+
         // マテリアルが複数ある場合の次のマテリアルのフェードを開始
-        if (_number < GetComponent<MeshRenderer>().materials.Length)
+        if (_materialNumber < meshRenderer.materials.Length)
         {
             StartCoroutine("Transparent");
         }
@@ -53,5 +63,7 @@ public class DestroyObject : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
         }
 
+        // 透明になったらオブジェクトを削除する
+        Destroy(this.gameObject, _DESTROY_DELAY);
     }
 }

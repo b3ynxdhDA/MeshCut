@@ -1,15 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 
 //ポーズ機能を呼び出すクラス
 //常にアクティブなオブジェクトにアタッチして
 public class PauseScript : MonoBehaviour
 {
-    //ポーズしたときに表示するUIプレハブ
+    //ポーズしたときに表示するUI
     [SerializeField] private GameObject _pauseUI = default;
-
-    //ポーズしたとき選択されているボタン
-    [SerializeField] private GameObject _selectedButton = default;
 
     private void Awake()
     {
@@ -41,13 +37,11 @@ public class PauseScript : MonoBehaviour
         {
             Time.timeScale = 0f;
             GameManager.instance.game_State = GameManager.GameState.Pause;
-            EventSystem.current.SetSelectedGameObject(_selectedButton);
         }
         else
         {
             Time.timeScale = 1f;
             GameManager.instance.game_State = GameManager.GameState.GameNow;
-            EventSystem.current.SetSelectedGameObject(null);
         }
     }
 }

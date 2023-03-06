@@ -59,12 +59,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ebd555725e9ad4a8971b79dc285df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onDecision: {fileID: 0}
-  _moveCorsor: {fileID: 0}
-  _swap: {fileID: 0}
-  _panelErase: {fileID: 0}
-  _startCount3: {fileID: 0}
-  _startCount_Go: {fileID: 0}
+  _onDecision: {fileID: 8300000, guid: 7524d4f4bdf81e445a91bfd7371f2450, type: 3}
+  _startCount3: {fileID: 8300000, guid: 3b83abc1afac887448ac1f55ddf7e4b6, type: 3}
+  _startCount_Go: {fileID: 8300000, guid: 1df2e4e20395d8341a667d2f7a6e0e7b, type: 3}
 --- !u!82 &413296009493495641
 AudioSource:
   m_ObjectHideFlags: 0

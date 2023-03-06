@@ -9,19 +9,16 @@ public class SEManager : MonoBehaviour
 {
     private AudioSource _audioSource;
 
-    //決定のSE
-    [SerializeField] private AudioClip _onDecision = default;
+    [SerializeField,Header("決定のSE")] 
+    private AudioClip _onDecision = default;
 
-    //カーソル移動のSE
-    [SerializeField] private AudioClip _moveCorsor = default;
+    [SerializeField,Header("カウントダウンのSE")] 
+    private AudioClip _startCount3 = default;
 
-    //カウントダウンのSE
-    [SerializeField] private AudioClip _startCount3 = default;
+    [SerializeField,Header("ゲームスタートのSE")]
+    private AudioClip _startCount_Go = default;
 
-    //ゲームスタートのSE
-    [SerializeField] private AudioClip _startCount_Go = default;
-
-    private void Start()
+    private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
     }
@@ -32,13 +29,6 @@ public class SEManager : MonoBehaviour
     public void OnDecision_SE()
     {
         _audioSource.PlayOneShot(_onDecision);
-    }
-    /// <summary>
-    /// カーソル移動SEを鳴らす
-    /// </summary>
-    public void OnMoveCorsor_SE()
-    {
-        _audioSource.PlayOneShot(_moveCorsor);
     }
     /// <summary>
     /// 切断SEを鳴らす

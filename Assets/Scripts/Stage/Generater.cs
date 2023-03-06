@@ -7,15 +7,23 @@ using UnityEngine;
 /// </summary>
 public class Generater : MonoBehaviour
 {
+    // 変数宣言----------------------------------
     [SerializeField, Header("生成するオブジェクトのプレハブ")]
     private GameObject[] _generatedObjectPrefab;
 
     // オブジェクトを生成する位置のゲームオブジェクト
-    private GameObject[] _generatPoint = new GameObject[1];
+    private GameObject[] _generatPoint = new GameObject[2];
+    // 投擲インターバル
+    float _throwInterval = default;
+    // 定数宣言---------------------
     // 発射角度の最小
     const float _ANGLE_MIN = 10;
     // 発射角度の最小
     const float _ANGLE_MAX = 71;
+    // 投擲間隔の最小
+    const int _THROW_INTERVAL_MIN = 1;
+    // 投擲間隔の最大
+    const int _THROW_INTERVAL_MAX = 4;
     // プレイヤーの位置
     readonly Vector3 _PLAYER_POSITION = new Vector3(0f, 2f, 0f);
 
@@ -29,29 +37,61 @@ public class Generater : MonoBehaviour
             childObjectCount++;
         }
 
-        Throwing();
+        _throwInterval = Random.Range(_THROW_INTERVAL_MIN, _THROW_INTERVAL_MAX);
+
     }
 
     void Update()
     {
-        
+        // ゲームの状態がゲーム中以外なら処理しない
+        if (GameManager.instance.game_State != GameManager.GameState.GameNow)
+        {
+            return;
+        }
+
+        // インターバルを1秒づつ減らす
+        _throwInterval -= Time.deltaTime;
+        // インターバルが0より小さくなれば
+        if(_throwInterval < 0)
+        {
+            RandomThrow();
+            _throwInterval = Random.Range(_THROW_INTERVAL_MIN, _THROW_INTERVAL_MAX);
+        }
+
+
+        // @スペースでランダム投擲
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            RandomThrow();
+        }
     }
 
     /// <summary>
+    /// ランダムなオブジェクトをランダムなポジションから投擲する
+    /// </summary>
+    private void RandomThrow()
+    {
+        // ランダムな投擲するオブジェクトプレハブの引数
+        int randomThrowObjectArgument = Random.Range(0, _generatedObjectPrefab.Length);
+        // ランダムな投擲位置
+        int randomThrowPositionArgument = Random.Range(0, _generatPoint.Length);
+        // ランダムなオブジェクトをランダムなポジションから投擲する
+        Throwing(_generatedObjectPrefab[randomThrowObjectArgument], _generatPoint[randomThrowPositionArgument].transform.position);
+    }
+    /// <summary>
     /// オブジェクトを射出する
     /// </summary>
-    private void Throwing()
+    private void Throwing(GameObject throwObject, Vector3 throwPosition)
     {
-        GameObject generatedObject = Instantiate(_generatedObjectPrefab[0], _generatPoint[0].transform.position, Quaternion.identity);
+        GameObject generatedObject = Instantiate(throwObject, throwPosition, Quaternion.identity);
 
         // 射出角度をランダムに決める
         float throwAngle = Random.Range(_ANGLE_MIN, _ANGLE_MAX);
 
         // 射出速度を算出
-        Vector3 velocity = CalculateVelocity(_generatPoint[0].transform.position, _PLAYER_POSITION, throwAngle);
+        Vector3 velocity = CalculateVelocity(throwPosition, _PLAYER_POSITION, throwAngle);
 
-        print(velocity);
-        // 射出
+        // AddForceで射出する
         Rigidbody rid = generatedObject.GetComponent<Rigidbody>();
         rid.AddForce(velocity * rid.mass, ForceMode.Impulse);
     }
@@ -67,23 +107,19 @@ public class Generater : MonoBehaviour
     {
         // 射出角をラジアンに変換
         float rad = angle * Mathf.PI / 180;
-        print("rad" + rad);
+
         // 水平方向の距離x
-        float horizontalDistance = Vector3.Distance(new Vector3(targetPos.x,0, targetPos.z), new Vector3(throwPos.x,0, throwPos.z));
-        print("horiDis" + horizontalDistance);
+        float horizontalDistance = Vector3.Distance(new Vector3(targetPos.x, 0, targetPos.z), new Vector3(throwPos.x, 0, throwPos.z));
 
         // 垂直方向の距離y
         float verticalDistance = targetPos.y - throwPos.y;
-        print("verDis" + verticalDistance);
 
         // 斜方投射の公式を初速度について解く
         float speed = Mathf.Sqrt(-Physics.gravity.y * Mathf.Pow(horizontalDistance, 2) / (2 * Mathf.Pow(Mathf.Cos(rad), 2) * (horizontalDistance * Mathf.Tan(rad) + verticalDistance)));
-        print(speed);
 
+        // 条件を満たす初速を算出できなければVector3.zeroを返す
         if (float.IsNaN(speed))
-        {     
-            print("isnan");
-            // 条件を満たす初速を算出できなければVector3.zeroを返す
+        {
             return Vector3.zero;
         }
         else

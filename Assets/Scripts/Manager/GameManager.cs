@@ -19,21 +19,27 @@ public class GameManager : MonoBehaviour
     public GameState game_State { get { return _game_State; } set { _game_State = value; } }
     /// <summary>
     /// ゲームの状態
+    /// Title:タイトル
+    /// GameRedy:ゲーム開始前
+    /// GameNow:ゲーム中
+    /// GameOver:死亡後
+    /// Result:リザルト
+    /// Pause:ポーズ
+    /// Setting:設定
     /// </summary>
     public enum GameState
     {
-        Title,
-        Select,
-        GameRedy,
-        GameNow,
-        GameOver,
-        Result,
-        Pause,
-        Setting
+        Title,     
+        GameRedy,  
+        GameNow,   
+        GameOver,  
+        Result,    
+        Pause,     
+        Setting    
     };
 
-    // ハイスコアの変数
-    public int _highScore = 0;
+    // スコアの変数
+    public int _nowScore = 0;
 
     #endregion
     private void Awake()

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// @テスト用
+/// </summary>
 public class Move : MonoBehaviour
 {
 
@@ -9,11 +12,13 @@ public class Move : MonoBehaviour
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
+
+        GameManager.instance.game_State = GameManager.GameState.GameNow;
     }
 
     void Update()
     {
-        _rigidbody.AddForce(Vector3.back);
+        //_rigidbody.AddForce(Vector3.back);
         
     }
 }
