@@ -45,8 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453dff2aede9d5941bad79c927c20fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _configCanvas: {fileID: 1200619586308441919, guid: 7765cb6ae060398479ed7af0b18b8f05, type: 3}
   _seManager: {fileID: 0}
-  _highScore: 0
+  _nowScore: 0
 --- !u!114 &4429697775210250949
 MonoBehaviour:
   m_ObjectHideFlags: 0

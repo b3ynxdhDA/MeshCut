@@ -8,10 +8,13 @@ public class GameManager : MonoBehaviour
 {
     #region 変数
 
-    // SEマネージャー
+    [SerializeField,Header("設定のUICanvas")]
+    private GameObject _configCanvas = default;
+
+    [HideInInspector]// SEマネージャー
     public SEManager _seManager = default;
 
-    //private GameManager _instance = null;
+    // ゲームマネージャーインスタンス
     public static GameManager instance { get; set; }
 
     // ゲームの状態の
@@ -25,7 +28,7 @@ public class GameManager : MonoBehaviour
     /// GameOver:死亡後
     /// Result:リザルト
     /// Pause:ポーズ
-    /// Setting:設定
+    /// Config:設定
     /// </summary>
     public enum GameState
     {
@@ -35,10 +38,10 @@ public class GameManager : MonoBehaviour
         GameOver,  
         Result,    
         Pause,     
-        Setting    
+        Config    
     };
 
-    // スコアの変数
+    [HideInInspector]// スコアの変数
     public int _nowScore = 0;
 
     #endregion
@@ -57,5 +60,28 @@ public class GameManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+    }
+
+    /// <summary>
+    /// コンフィグキャンバスを表示
+    /// </summary>
+    public void CallConfigUI()
+    {
+        _game_State = GameState.Config;
+        _configCanvas.SetActive(true);
+    }
+
+    /// <summary>
+    /// ゲームの終了
+    /// </summary>
+    public void OnExit()
+    {
+#if UNITY_EDITOR
+        //エディターの時は再生をやめる
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+            //アプリケーションを終了する
+            Application.Quit();
+#endif
     }
 }

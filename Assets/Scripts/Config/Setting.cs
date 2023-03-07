@@ -9,7 +9,7 @@ public class Setting : MonoBehaviour
     [SerializeField] GameObject u_ChangeScreenText = null;
 
     // trueならWindow,falseならFullScreen
-    private bool isScreenMode = false;
+    private bool _isFullScreen = false;
 
     // フルスクリーン時のスクリーンサイズ
     const int FULL_WIDHT = 1920;
@@ -20,28 +20,28 @@ public class Setting : MonoBehaviour
         if (Screen.width < FULL_WIDHT)
         {
             u_ChangeScreenText.GetComponent<Text>().text = "< Window >";
-            isScreenMode = true;
+            _isFullScreen = false;
         }
         else
         {
             u_ChangeScreenText.GetComponent<Text>().text = "< Full Screen >";
-            isScreenMode = false;
+            _isFullScreen = true;
         }
     }
 
     public void OnScreenChange()
     {
-        // 
-        if (isScreenMode)
+        // 現在のスクリーンサイズがフルスクリーンなら
+        if (_isFullScreen)
         {
-            isScreenMode = false;
-            Screen.SetResolution(Screen.width, Screen.height, false);
+            _isFullScreen = true;
+            Screen.SetResolution(Screen.width, Screen.height, true);
             u_ChangeScreenText.GetComponent<Text>().text = "< Full Screen >";
         }
         else
         {
-            isScreenMode = true;
-            Screen.SetResolution(Screen.width, Screen.height, true);
+            _isFullScreen = false;
+            Screen.SetResolution(Screen.width, Screen.height, false);
             u_ChangeScreenText.GetComponent<Text>().text = "< Window >";
         }
     }

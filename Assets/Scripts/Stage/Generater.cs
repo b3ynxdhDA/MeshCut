@@ -11,13 +11,13 @@ public class Generater : MonoBehaviour
     [SerializeField, Header("生成するオブジェクトのプレハブ")]
     private GameObject[] _generatedObjectPrefab;
 
-    // オブジェクトを生成する位置のゲームオブジェクト
-    private GameObject[] _generatPoint = new GameObject[2];
+    // オブジェクトを生成する位置のゲームオブジェクトのリスト
+    private List<GameObject> _generatPoint = new List<GameObject>();
     // 投擲インターバル
     float _throwInterval = default;
     // 定数宣言---------------------
     // 発射角度の最小
-    const float _ANGLE_MIN = 10;
+    const float _ANGLE_MIN = 30;
     // 発射角度の最小
     const float _ANGLE_MAX = 71;
     // 投擲間隔の最小
@@ -30,11 +30,10 @@ public class Generater : MonoBehaviour
 
     void Start()
     {
-        int childObjectCount = 0;
+        // Generaterの子オブジェクトをListに格納
         foreach(Transform childObject in this.gameObject.transform)
         {
-            _generatPoint[childObjectCount] = childObject.gameObject;
-            childObjectCount++;
+            _generatPoint.Add(childObject.gameObject);
         }
 
         _throwInterval = Random.Range(_THROW_INTERVAL_MIN, _THROW_INTERVAL_MAX);
@@ -74,7 +73,7 @@ public class Generater : MonoBehaviour
         // ランダムな投擲するオブジェクトプレハブの引数
         int randomThrowObjectArgument = Random.Range(0, _generatedObjectPrefab.Length);
         // ランダムな投擲位置
-        int randomThrowPositionArgument = Random.Range(0, _generatPoint.Length);
+        int randomThrowPositionArgument = Random.Range(0, _generatPoint.Count);
         // ランダムなオブジェクトをランダムなポジションから投擲する
         Throwing(_generatedObjectPrefab[randomThrowObjectArgument], _generatPoint[randomThrowPositionArgument].transform.position);
     }

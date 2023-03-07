@@ -13,13 +13,30 @@ public class TitleManager : MonoBehaviour
         GameManager.instance.game_State = GameManager.GameState.Title;
     }
 
-    void FixedUpdate()
+    /// <summary>
+    /// ゲームシーンに遷移するボタンが押されたら
+    /// </summary>
+    public void OnGameScene()
     {
-        // いずれかのボタンが押されたらゲームに進む
-        if (Input.anyKey)
-        {
-            GameManager.instance.game_State = GameManager.GameState.GameRedy;
-            SceneManager.LoadScene("GameScene");
-        }
+        GameManager.instance.game_State = GameManager.GameState.GameRedy;
+        SceneManager.LoadScene("GameScene");
+    }
+
+    /// <summary>
+    /// 設定ボタンが押されたら
+    /// </summary>
+    public void OnConfigButton()
+    {
+        // ゲームマネージャーの終了メソッドを呼び出す
+        GameManager.instance.CallConfigUI();
+    }
+
+    /// <summary>
+    /// 終了ボタンが押されたら
+    /// </summary>
+    public void OnExitButton()
+    {
+        // ゲームマネージャーの終了メソッドを呼び出す
+        GameManager.instance.OnExit();
     }
 }

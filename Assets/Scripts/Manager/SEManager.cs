@@ -22,7 +22,13 @@ public class SEManager : MonoBehaviour
     {
         _audioSource = GetComponent<AudioSource>();
     }
-
+    void Update()
+    {
+        if (ConfigManager.instance._masterVolume != _audioSource.volume)
+        {
+            _audioSource.volume = ConfigManager.instance._masterVolume;
+        }
+    }
     /// <summary>
     /// 決定SEを鳴らす
     /// </summary>

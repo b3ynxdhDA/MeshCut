@@ -8,29 +8,31 @@ public class PauseButton : MonoBehaviour
 {
     //EventSystemのFirstSelectedに
     //呼び出した時に選択状態にするボタンオブジェクトをアタッチして
-    
-    public void OnCheckPoint()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
 
-    public void OnMain()
+    /// <summary>
+    /// タイトルボタンが押されたら
+    /// </summary>
+    public void OnTitleButton()
     {
-        SceneManager.LoadScene("MainScene");
-    }
-    public void OnTitle()
-    {
+        // タイトルシーンに戻る
         SceneManager.LoadScene("TitleScene");
     }
 
-    public void OnExit()
+    /// <summary>
+    /// 設定ボタンが押されたら
+    /// </summary>
+    public void OnConfigButton()
     {
-#if UNITY_EDITOR
-        //エディターの時は再生をやめる
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-            //アプリケーションを終了する
-            Application.Quit();
-#endif
+        // ゲームマネージャーの終了メソッドを呼び出す
+        GameManager.instance.CallConfigUI();
+    }
+
+    /// <summary>
+    /// 終了ボタンが押されたら
+    /// </summary>
+    public void OnExitButton()
+    {
+        // ゲームマネージャーの終了メソッドを呼び出す
+        GameManager.instance.OnExit();
     }
 }

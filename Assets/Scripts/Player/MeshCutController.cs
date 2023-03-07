@@ -39,8 +39,8 @@ namespace Player
         const int _LIST_END = -1;
         // 切断できるLayerMask
         const int _CUT_LAYER_MASK = 1 << 8;
-        [SerializeField, Range(1, 10), Header("@切断したオブジェクト同士の間隔をあける力")]
-        private int _CUT_DIVISION_FORCE = 3;
+        // 切断したオブジェクト同士の間隔をあける力
+        const int _CUT_DIVISION_FORCE = 10;
         // centerPosを取るためのRayの長さ
         const float _CENTER_RAY_RANGE = 20f;
         // 切断時のスコア

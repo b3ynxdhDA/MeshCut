@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1713627819965336558}
   - component: {fileID: 9160764198462987734}
   - component: {fileID: 1695356348775655403}
+  - component: {fileID: 2193331901400666326}
   m_Layer: 0
   m_Name: GeneratPoint
   m_TagString: Untagged
@@ -82,6 +83,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2193331901400666326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713627819965336557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e3931b65a3e5ca4db05721daadcae28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1713627819973582925
 GameObject:
   m_ObjectHideFlags: 0
