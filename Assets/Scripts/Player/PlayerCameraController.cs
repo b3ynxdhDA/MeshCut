@@ -6,10 +6,11 @@ using UnityEngine;
 namespace Player
 {
     /// <summary>
-    /// 
+    /// プレイヤーのカメラ操作に関するクラス
     /// </summary>
     public class PlayerCameraController : MonoBehaviour
     {
+        // 変数宣言----------------------------------
         // プレイヤーのメインカメラ
         private GameObject _playerCamera;
         // カメラの向いている角度
@@ -21,6 +22,7 @@ namespace Player
         // Y軸の感度
         private float Ysensityvity = 3f;
 
+        // 定数宣言---------------------------------
         // 旋回角度の制限
         const float minX = -90f;
         const float maxX = 90f;
@@ -29,7 +31,11 @@ namespace Player
         {
             // プレイヤーのメインカメラを取得
             _playerCamera = Camera.main.gameObject;
+
+            // カメラの向きをTransformから取得
             _cameraRot = _playerCamera.transform.localRotation;
+
+            // キャラクターの向きを取得
             _characterRot = transform.localRotation;
         }
 

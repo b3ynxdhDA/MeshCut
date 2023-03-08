@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class NewMeshCut : MonoBehaviour
 {
+    // 変数宣言----------------------------------
     // 切断対象のメッシュ
     static Mesh _targetMesh;
 
@@ -134,6 +135,8 @@ public class NewMeshCut : MonoBehaviour
 
             int frontCount = 0;
             int backCount = 0;
+
+            // 切断対象の頂点数だけループ
             for (int i = 0; i < _targetVertices.Length; i++)
             {
                 Vector3 pos = _targetVertices[i];
@@ -173,6 +176,7 @@ public class NewMeshCut : MonoBehaviour
         // submeshの番号
         int submeshCount = _targetMesh.subMeshCount;
 
+        // 切断対象のサブメッシュの数だけループする
         for (int sub = 0; sub < submeshCount; sub++)
         {
             // ポリゴン情報の配列(indices:indexの複数形)
@@ -230,8 +234,10 @@ public class NewMeshCut : MonoBehaviour
         // 切断されたポリゴンはここでそれぞれのMeshに追加される
         fragmentList.MakeTriangle();
 
+        // 切断面を埋めるか
         if (makeCutSurface)
         {
+            // 切断面に新しいマテリアルを追加するか
             if (addNewMeshIndices)
             {
                 //submeshが増えるのでリスト追加
@@ -351,6 +357,8 @@ public class NewMeshCut : MonoBehaviour
 
         // 元のオブジェクトのメッシュを切断面に対して裏側のメッシュに変える
         targetGameObject.GetComponent<MeshFilter>().mesh = originMesh;
+        // Rigidbodyのmassを半分にする
+        targetGameObject.GetComponent<Rigidbody>().mass /= 2;
         // 切れたオブジェクトが地面に着くと消えるスクリプトがついていなかったら
         if (targetGameObject.GetComponent<DestroyObject>() == null)
         {

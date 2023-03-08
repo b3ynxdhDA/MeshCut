@@ -11,7 +11,7 @@ namespace Player
     /// </summary>
     public class MeshCutController : MonoBehaviour
     {
-        #region 変数宣言
+        // 変数宣言----------------------------------
         [SerializeField, Header("切断面を埋める")]
         private bool _isCutSurfaceFill = false;
         [SerializeField, Header("切断面のマテリアル(nullならオブジェクトのマテリアルから埋める)")]
@@ -30,9 +30,12 @@ namespace Player
         private bool _isCutting = false;
         // 切断中のスロー状態
         private bool _isSlow = false;
+        [SerializeField, Header("カーソル跡のオブジェクト")]
+        private GameObject _cursorTrail = default;
+        // カーソル跡を表示するか
+        private bool _isCursorTrail = false;
         // カーソルロック
         private bool _isCursorLock = true;
-        #endregion
 
         // 定数宣言---------------------------------
         // リストの最後尾を調整する
@@ -40,11 +43,13 @@ namespace Player
         // 切断できるLayerMask
         const int _CUT_LAYER_MASK = 1 << 8;
         // 切断したオブジェクト同士の間隔をあける力
-        const int _CUT_DIVISION_FORCE = 10;
+        const int _CUT_DIVISION_FORCE = 5;
         // centerPosを取るためのRayの長さ
         const float _CENTER_RAY_RANGE = 20f;
         // 切断時のスコア
         const int _CUT_SCORE = 100;
+        // カーソル跡を表示するカメラからの距離
+        const float _nearClipPlaneDistance = 1f;
 
 
         void Update()
@@ -55,14 +60,15 @@ namespace Player
                 return;
             }
 
+            CursorTrail();
             // 左クリックが押されている
             if (Input.GetMouseButton(0))
             {
                 // カーソルロックをしていたら
                 if (_isCursorLock)
                 {
-                    //  カーソルを表示
-                    Cursor.lockState = CursorLockMode.None;
+                    // カーソルをゲーム画面内でのみ動かせるようにする
+                    Cursor.lockState = CursorLockMode.Confined;
                     _isCursorLock = false;
                 }
 
@@ -73,6 +79,13 @@ namespace Player
                 {
                     Time.timeScale = 0.5f;
                     _isSlow = true;
+                }
+
+                // カーソル跡が非表示だったら
+                if (!_cursorTrail.activeSelf)
+                {
+                    // カーソル跡を表示する
+                    _cursorTrail.SetActive(!_cursorTrail.activeSelf);
                 }
             }
             else
@@ -92,6 +105,13 @@ namespace Player
                 {
                     Time.timeScale = 1f;
                     _isSlow = false;
+                }
+
+                // カーソル跡が表示されてたら
+                if (_cursorTrail.activeSelf)
+                {
+                    // カーソル跡を非表示にする
+                    _cursorTrail.SetActive(!_cursorTrail.activeSelf);
                 }
             }
         }
@@ -171,6 +191,18 @@ namespace Player
             Vector3 normalDirection = Vector3.Cross(startDirection, endDirection);
 
             return (centerPos, normalDirection);
+        }
+
+        /// <summary>
+        /// カーソル跡のオブジェクトの位置をカーソルに追従させる
+        /// </summary>
+        private void CursorTrail()
+        {
+            // スクリーン上のカーソルのポジションを取得
+            Vector3 screenCursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane + _nearClipPlaneDistance);
+
+            // TrailRendererの付いたオブジェクトのポジションをスクリーン上のカーソルの位置にする
+            _cursorTrail.transform.position = Camera.main.ScreenToWorldPoint(screenCursorPosition);
         }
     }
 }

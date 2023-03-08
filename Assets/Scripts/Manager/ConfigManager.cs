@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 設定画面を管理するクラス
+/// </summary>
 public class ConfigManager : MonoBehaviour
 {
+    // 変数宣言--------------------------------------------------
     public static ConfigManager instance { get; private set; }
 
-    // 音量設定の変数----------------------------
+    // コンフィグを閉じたときに遷移するゲームステート
+    private GameManager.GameState _backGameState;
+
+    // 音量設定の変数---------------
     // SEの音量を調節するスライダー
     private Slider _masterVolumeSlider = default;
 
     [Header("SEの音量")]
     public float _masterVolume = 0.7f;
 
-    // ウィンドウサイズの変数----------------------------
+    // ウィンドウサイズの変数----------------------
     // 現在のスクリーンの状態を表示するテキスト
     [SerializeField] GameObject _ChangeScreenText = null;
 
@@ -35,7 +42,7 @@ public class ConfigManager : MonoBehaviour
     // 現在のスクリーンサイズ
     private int _nowScreenSize;
 
-    // 定数宣言------------------
+    // 定数宣言-------------------------------------
     // 小スクリーン時のスクリーン幅
     const int _SMALL_WIDHT = 1280;
     // 小スクリーン時のスクリーン幅
@@ -82,8 +89,15 @@ public class ConfigManager : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        // コンフィグを呼び出した時のゲームステートを記録
+        _backGameState = GameManager.instance.game_State;
+    }
+
     void Update()
     {
+        // ボリューム値とスライダーのvalueが違ったら
         if(_masterVolume != _masterVolumeSlider.value)
         {
             _masterVolume = _masterVolumeSlider.value;
@@ -127,9 +141,12 @@ public class ConfigManager : MonoBehaviour
     /// </summary>
     public void ScreenSizeUp()
     {
+        // 現在のスクリーンサイズを1段階大きくする
         _nowScreenSize++;
+        // _nowScreenSizeがScreenSizeの範囲より大きくなったら
         if(_nowScreenSize > (int)ScreenSize.FullScreen)
         {
+            // 1番小さいサイズに直す
             _nowScreenSize = (int)ScreenSize.Small_1280_720;
         }
         ScreenChange();
@@ -140,20 +157,24 @@ public class ConfigManager : MonoBehaviour
     /// </summary>
     public void ScreenSizeDown()
     {
+        // 現在のスクリーンサイズを1段階小さくする
         _nowScreenSize--;
-        if(_nowScreenSize < (int)ScreenSize.Small_1280_720)
+        // 
+        // _nowScreenSizeがScreenSizeの範囲より小さくなったら
+        if (_nowScreenSize < (int)ScreenSize.Small_1280_720)
         {
+            // 1番大きいサイズに直す
             _nowScreenSize = (int)ScreenSize.FullScreen;
         }
         ScreenChange();
     }
 
     /// <summary>
-    /// スクリーンの大きさを切り替える
+    /// スクリーンの大きさとテキストを切り替える
     /// </summary>
     public void ScreenChange()
     {
-        // 現在のスクリーンサイズがフルスクリーンなら
+        // スクリーンのサイズとテキストを再設定
         switch (_nowScreenSize)
         {
             case (int)ScreenSize.Small_1280_720:
@@ -180,6 +201,8 @@ public class ConfigManager : MonoBehaviour
     /// </summary>
     private void OnBack()
     {
+        // ゲームステートを呼び出す前の状態に戻す
+        GameManager.instance.game_State = _backGameState;
         this.gameObject.SetActive(false);
     }
 }

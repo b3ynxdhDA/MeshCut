@@ -7,6 +7,7 @@ using DG.Tweening;
 /// </summary>
 public class GeneratPointMove : MonoBehaviour
 {
+    // 変数宣言----------------------------------
     // 発射地点が移動する通過地点のリスト
     private List<Vector3> _relayPoint = new List<Vector3>();
 

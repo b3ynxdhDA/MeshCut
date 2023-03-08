@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 
-//ポーズ機能を呼び出すクラス
-//常にアクティブなオブジェクトにアタッチして
+/// <summary>
+/// ポーズ機能を呼び出すクラス
+/// 常にアクティブなオブジェクトにアタッチして
+/// </summary>
 public class PauseScript : MonoBehaviour
 {
-    //ポーズしたときに表示するUI
+
+    // 変数宣言----------------------------------
+    // ポーズしたときに表示するUI
     [SerializeField] private GameObject _pauseUI = default;
 
     private void Awake()
@@ -15,6 +19,7 @@ public class PauseScript : MonoBehaviour
     //ポーズ中は処理を受け付けない処理を書いてはいけない
     void Update()
     {
+        // Escapeキーでポーズを呼び出す
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             OnPouse();

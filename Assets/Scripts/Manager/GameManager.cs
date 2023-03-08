@@ -6,8 +6,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    #region 変数
-
+    // 変数宣言-----------------------------------------
     [SerializeField,Header("設定のUICanvas")]
     private GameObject _configCanvas = default;
 
@@ -17,9 +16,11 @@ public class GameManager : MonoBehaviour
     // ゲームマネージャーインスタンス
     public static GameManager instance { get; set; }
 
-    // ゲームの状態の
+    // GameManager内のゲームステート
     private GameState _game_State = GameState.Title;
-    public GameState game_State { get { return _game_State; } set { _game_State = value; } }
+
+    // 他のクラスから参照されるゲームステート
+    public GameState game_State { get; set; } = GameState.Title;
     /// <summary>
     /// ゲームの状態
     /// Title:タイトル
@@ -44,7 +45,6 @@ public class GameManager : MonoBehaviour
     [HideInInspector]// スコアの変数
     public int _nowScore = 0;
 
-    #endregion
     private void Awake()
     {
         // SEマネージャーを外部から参照しやすく
@@ -62,13 +62,61 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        // ゲームステートが切り替わったら
+        if(_game_State != game_State)
+        {
+            // 切り替え後のゲームステートでそれぞれ処理する
+            switch (game_State)
+            {
+                case GameState.Title:
+                    _game_State = game_State;
+
+                    ChangeStateToTitle();
+                    break;
+                case GameState.GameRedy:
+                    _game_State = game_State;
+
+                    ChangeStateToGameRedy();
+                    break;
+                case GameState.GameNow:
+                    _game_State = game_State;
+
+                    ChangeStateToGameNow();
+                    break;
+                case GameState.GameOver:
+                    _game_State = game_State;
+
+                    ChangeStateToGameOver();
+                    break;
+                case GameState.Pause:
+                    _game_State = game_State;
+
+                    ChangeStateToPause();
+                    break;
+                case GameState.Config:
+                    _game_State = game_State;
+
+                    ChangeStateToConfig();
+                    break;
+                case GameState.Result:
+                    _game_State = game_State;
+
+                    ChangeStateToResult();
+                    break;
+            }
+        }
+        _seManager.CheckVolume();
+    }
+
     /// <summary>
     /// コンフィグキャンバスを表示
     /// </summary>
     public void CallConfigUI()
     {
-        _game_State = GameState.Config;
         _configCanvas.SetActive(true);
+        _game_State = GameState.Config;
     }
 
     /// <summary>
@@ -84,4 +132,65 @@ public class GameManager : MonoBehaviour
             Application.Quit();
 #endif
     }
+
+    #region ゲームステート切り替え時の処理メソッド
+    /// <summary>
+    /// ゲームステートがTitleになったとき
+    /// </summary>
+    private void ChangeStateToTitle()
+    {
+        // マウスカーソルを表示する
+        Cursor.visible = true;
+    }
+    /// <summary>
+    /// ゲームステートがGameRedyになったとき
+    /// </summary>
+    private void ChangeStateToGameRedy()
+    {
+        // カーソルをゲーム画面内でのみ動かせるようにする
+        Cursor.lockState = CursorLockMode.Confined;
+
+        // マウスカーソルを非表示にする
+        Cursor.visible = false;
+    }
+    /// <summary>
+    /// ゲームステートがGameNowになったとき
+    /// </summary>
+    private void ChangeStateToGameNow()
+    {
+        // マウスカーソルを非表示にする
+        Cursor.visible = false;
+    }
+    /// <summary>
+    /// ゲームステートがGameOverになったとき
+    /// </summary>
+    private void ChangeStateToGameOver()
+    {
+
+    }
+    /// <summary>
+    /// ゲームステートがPauseになったとき
+    /// </summary>
+    private void ChangeStateToPause()
+    {
+        // マウスカーソルを表示する
+        Cursor.visible = true;
+    }
+    /// <summary>
+    /// ゲームステートがConfigになったとき
+    /// </summary>
+    private void ChangeStateToConfig()
+    {
+
+    }
+    /// <summary>
+    /// ゲームステートがResultになったとき
+    /// </summary>
+    private void ChangeStateToResult()
+    {
+        // マウスカーソルを表示する
+        Cursor.visible = true;
+    }
+
+    #endregion
 }

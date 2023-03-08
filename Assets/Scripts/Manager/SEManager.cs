@@ -7,8 +7,11 @@ using UnityEngine;
 /// </summary>
 public class SEManager : MonoBehaviour
 {
+    // 変数宣言----------------------------------
+    // システム音などを管理するAudioSource
     private AudioSource _audioSource;
 
+    // ゲームの全体で使われる可能性があるSE--------------------
     [SerializeField,Header("決定のSE")] 
     private AudioClip _onDecision = default;
 
@@ -22,13 +25,25 @@ public class SEManager : MonoBehaviour
     {
         _audioSource = GetComponent<AudioSource>();
     }
-    void Update()
+
+    /// <summary>
+    /// ConfigManagerの設定値とaudioSourceのVolumeを揃える
+    /// </summary>
+    public void CheckVolume()
     {
-        if (ConfigManager.instance._masterVolume != _audioSource.volume)
+        // ConfigurationオブジェクトがTrueのとき
+        // エディタ再生時Configurationが非アクティブだとNullReferenceExceptionが出る
+        if (ConfigManager.instance.gameObject.activeSelf)
         {
-            _audioSource.volume = ConfigManager.instance._masterVolume;
+            // ConfigManagerの設定値をaudioSourceに反映
+            if (ConfigManager.instance._masterVolume != _audioSource.volume)
+            {
+                _audioSource.volume = ConfigManager.instance._masterVolume;
+            }
         }
     }
+
+    #region SEメソッド
     /// <summary>
     /// 決定SEを鳴らす
     /// </summary>
@@ -64,4 +79,5 @@ public class SEManager : MonoBehaviour
     {
         _audioSource.PlayOneShot(_startCount_Go);
     }
+    #endregion
 }

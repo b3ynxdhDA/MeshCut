@@ -62,7 +62,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isCutSurfaceFill: 1
   _CutSurfaceMaterial: {fileID: 0}
-  _CUT_DIVISION_FORCE: 3
 --- !u!114 &3504244838669144873
 MonoBehaviour:
   m_ObjectHideFlags: 0
