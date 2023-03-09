@@ -24,16 +24,12 @@ namespace Player
         private RaycastHit _hit;
         // 切断Rayの長さ
         private float _cutRayDistance = 20f;
-        // 切断モードの制限時間
-        private float _canCutTimer = 5f;
         // Rayがオブジェクトを切断中か
         private bool _isCutting = false;
         // 切断中のスロー状態
         private bool _isSlow = false;
         [SerializeField, Header("カーソル跡のオブジェクト")]
         private GameObject _cursorTrail = default;
-        // カーソル跡を表示するか
-        private bool _isCursorTrail = false;
         // カーソルロック
         private bool _isCursorLock = true;
 

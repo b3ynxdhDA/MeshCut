@@ -1,10 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// ステージの
+/// ステージやそのUIを管理するクラス
 /// </summary>
 public class StageManager : MonoBehaviour
 {
@@ -20,7 +19,7 @@ public class StageManager : MonoBehaviour
     [SerializeField] private GameObject _gameOverText = default;
 
     // リザルトテキスト
-    [SerializeField] private GameObject _resultText = default;
+    [SerializeField] private GameObject _resultUI = default;
 
     // ハイスコアテキスト
     [SerializeField] private Text _scoreCountText = default;
@@ -33,14 +32,9 @@ public class StageManager : MonoBehaviour
     const int _ONE_MINUTES = 60;
     // 1回のゲーム時間
     const int _GAME_TIME = 1;
-    // ゲームオーバーテキストの最終位置
-    readonly Vector3 _GAMEOVER_TEXT_POSITION = Vector3.zero;
 
     private void Start()
     {
-        // リザルトを非表示に
-        //_resultText.gameObject.SetActive(false);
-
         // ゲームの状態をゲーム中に
         GameManager.instance.game_State = GameManager.GameState.GameRedy;
 
@@ -52,9 +46,10 @@ public class StageManager : MonoBehaviour
     }
     private void Update()
     {
-        // ハイスコアの更新
+        // ハイスコアの表示を更新
         _scoreCountText.text = "" + GameManager.instance._nowScore;
 
+        // 
         if (GameManager.instance.game_State == GameManager.GameState.GameNow)
         {
             // タイマーの更新(増加)
@@ -65,6 +60,7 @@ public class StageManager : MonoBehaviour
             _timerCount -= Time.deltaTime;
             _timerCountText.text = "" + ((int)_timerCount / _ONE_MINUTES).ToString("00") + " : " + ((int)_timerCount % _ONE_MINUTES).ToString("00");
 
+            // 制限時間が0より小さくなったら
             if(_timerCount < 0)
             {
                 StartCoroutine("GameOver");
@@ -100,24 +96,23 @@ public class StageManager : MonoBehaviour
         GameManager.instance.game_State = GameManager.GameState.GameNow;
     }
 
+    /// <summary>
+    /// ゲームオーバーしてからリザルトまでの処理
+    /// </summary>
+    /// <returns></returns>
     IEnumerator GameOver()
     {
         // ゲームステートをGameOverに
         GameManager.instance.game_State = GameManager.GameState.GameOver;
 
         _gameOverText.SetActive(true);
+        //@ゲームオーバーテキストが降りてくるアニメーションを再生
 
         yield return new WaitForSeconds(3f);
 
-        print("result");
+        // ゲームステートをResultに
         GameManager.instance.game_State = GameManager.GameState.Result;
-    }
-
-    /// <summary>
-    /// リザルトを表示
-    /// </summary>
-    public void ResultUI()
-    {
-        _resultText.gameObject.SetActive(true);
+        
+        _resultUI.SetActive(true);
     }
 }

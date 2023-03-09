@@ -17,6 +17,14 @@ public class PauseButton : MonoBehaviour
         // タイトルシーンに戻る
         SceneManager.LoadScene("TitleScene");
     }
+    /// <summary>
+    /// リトライボタンが押されたら
+    /// </summary>
+    public void OnRetryButton()
+    {
+        // タイトルシーンに戻る
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
     /// <summary>
     /// 設定ボタンが押されたら
