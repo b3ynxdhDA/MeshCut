@@ -147,6 +147,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void ChangeStateToGameRedy()
     {
+        // スコアを初期化
+        _nowScore = 0;
+
         // カーソルをゲーム画面内でのみ動かせるようにする
         Cursor.lockState = CursorLockMode.Confined;
 
@@ -190,6 +193,8 @@ public class GameManager : MonoBehaviour
     {
         // マウスカーソルを表示する
         Cursor.visible = true;
+        // カーソルロックを解除する
+        Cursor.lockState = CursorLockMode.None;
     }
 
     #endregion

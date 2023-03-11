@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,13 +7,15 @@ using UnityEngine;
 public class Generater : MonoBehaviour
 {
     // 変数宣言----------------------------------
+    [SerializeField, Header("プレイヤーの位置")]
+    private Transform _playerTransform;
     [SerializeField, Header("生成するオブジェクトのプレハブ")]
     private GameObject[] _generatedObjectPrefab;
-
     // オブジェクトを生成する位置のゲームオブジェクトのリスト
     private List<GameObject> _generatPoint = new List<GameObject>();
     // 投擲インターバル
     float _throwInterval = default;
+
     // 定数宣言---------------------
     // 発射角度の最小
     const float _ANGLE_MIN = 30;
@@ -24,9 +25,6 @@ public class Generater : MonoBehaviour
     const int _THROW_INTERVAL_MIN = 1;
     // 投擲間隔の最大
     const int _THROW_INTERVAL_MAX = 4;
-    // プレイヤーの位置
-    readonly Vector3 _PLAYER_POSITION = new Vector3(0f, 2f, 0f);
-
 
     void Start()
     {
@@ -88,7 +86,7 @@ public class Generater : MonoBehaviour
         float throwAngle = Random.Range(_ANGLE_MIN, _ANGLE_MAX);
 
         // 射出速度を算出
-        Vector3 velocity = CalculateVelocity(throwPosition, _PLAYER_POSITION, throwAngle);
+        Vector3 velocity = CalculateVelocity(throwPosition, _playerTransform.position, throwAngle);
 
         // AddForceで射出する
         Rigidbody rid = generatedObject.GetComponent<Rigidbody>();

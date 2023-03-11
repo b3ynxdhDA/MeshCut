@@ -89,7 +89,7 @@ public class ResultManager : MonoBehaviour
             // 表示する順位
             rankintNumber = i + 1;
             // スコアテキストを更新
-            _scoreText[i].text = rankintNumber + ".  " + _score[i].ToString("000000000") + _updateNewText;
+            _scoreText[i].text = rankintNumber + ".  " + _score[i].ToString("000000000   ") + _updateNewText;
 
             // スコアの更新があったら
             if (_isHighScoreUpdate)

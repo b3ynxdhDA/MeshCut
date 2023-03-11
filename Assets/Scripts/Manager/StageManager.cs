@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class StageManager : MonoBehaviour
 {
     // 変数宣言--------------------------
+    private Animator _animator = default;
     // タイマー
     private float _timerCount = 0;
 
@@ -31,10 +32,16 @@ public class StageManager : MonoBehaviour
     // 1分間の秒数
     const int _ONE_MINUTES = 60;
     // 1回のゲーム時間
-    const int _GAME_TIME = 1;
+    const int _GAME_TIME = 60;
 
     private void Start()
     {
+        // アニメーターを取得する
+        _animator = GetComponent<Animator>();
+
+        // ゲームオーバーのアニメーションを初期化
+        _animator.SetBool("isGameOver", false);
+
         // ゲームの状態をゲーム中に
         GameManager.instance.game_State = GameManager.GameState.GameRedy;
 
@@ -49,7 +56,7 @@ public class StageManager : MonoBehaviour
         // ハイスコアの表示を更新
         _scoreCountText.text = "" + GameManager.instance._nowScore;
 
-        // 
+        // ゲームステートがゲーム中の時
         if (GameManager.instance.game_State == GameManager.GameState.GameNow)
         {
             // タイマーの更新(増加)
@@ -106,7 +113,8 @@ public class StageManager : MonoBehaviour
         GameManager.instance.game_State = GameManager.GameState.GameOver;
 
         _gameOverText.SetActive(true);
-        //@ゲームオーバーテキストが降りてくるアニメーションを再生
+        // ゲームオーバーテキストが降りてくるアニメーションを再生
+        _animator.SetBool("isGameOver",true);
 
         yield return new WaitForSeconds(3f);
 

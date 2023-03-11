@@ -140,7 +140,7 @@ namespace Player
                 if (frontObject && _tergetObject.GetComponent<Rigidbody>())
                 {
                     // スコアを加算
-                    GameManager.instance._nowScore = _CUT_SCORE;
+                    GameManager.instance._nowScore += _CUT_SCORE;
 
                     // 切断したオブジェクトの間隔を開ける
                     frontObject.GetComponent<Rigidbody>().AddForce(-normal * _CUT_DIVISION_FORCE, ForceMode.Impulse);
