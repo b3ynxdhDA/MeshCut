@@ -45,7 +45,11 @@ namespace Player
         // 切断時のスコア
         const int _CUT_SCORE = 100;
         // カーソル跡を表示するカメラからの距離
-        const float _nearClipPlaneDistance = 1f;
+        const float _NEAR_CLIP_PLANE_DISTANCE = 1f;
+        // 切断中のタイムスケール
+        const float _CUTING_TIMESCALE = 0.3f;
+        // 通常のタイムスケール
+        const float _DEFAULT_TIMESCALE = 1f;
 
 
         void Update()
@@ -73,7 +77,7 @@ namespace Player
                 // スロー状態じゃなかったら
                 if (!_isSlow)
                 {
-                    Time.timeScale = 0.5f;
+                    Time.timeScale = _CUTING_TIMESCALE;
                     _isSlow = true;
                 }
 
@@ -99,7 +103,7 @@ namespace Player
                 // スロー状態だったら
                 if (_isSlow)
                 {
-                    Time.timeScale = 1f;
+                    Time.timeScale = _DEFAULT_TIMESCALE;
                     _isSlow = false;
                 }
 
@@ -139,6 +143,9 @@ namespace Player
                 // 切断対象にrigidbodyが付いていたら
                 if (frontObject && _tergetObject.GetComponent<Rigidbody>())
                 {
+                    // 切断音を鳴らす
+                    GameManager.instance._seManager.OnCut_SE();
+
                     // スコアを加算
                     GameManager.instance._nowScore += _CUT_SCORE;
 
@@ -195,7 +202,7 @@ namespace Player
         private void CursorTrail()
         {
             // スクリーン上のカーソルのポジションを取得
-            Vector3 screenCursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane + _nearClipPlaneDistance);
+            Vector3 screenCursorPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane + _NEAR_CLIP_PLANE_DISTANCE);
 
             // TrailRendererの付いたオブジェクトのポジションをスクリーン上のカーソルの位置にする
             _cursorTrail.transform.position = Camera.main.ScreenToWorldPoint(screenCursorPosition);

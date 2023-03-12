@@ -60,9 +60,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ebd555725e9ad4a8971b79dc285df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _titleBGM: {fileID: 0}
+  _mainBGM: {fileID: 8300000, guid: 76ea9f4757108314aa7f59b259ca0682, type: 3}
+  _resultBGM: {fileID: 0}
+  _cuting: {fileID: 8300000, guid: b706457eacaf83146b39c84df19c0555, type: 3}
   _onDecision: {fileID: 8300000, guid: 7524d4f4bdf81e445a91bfd7371f2450, type: 3}
+  _onPause: {fileID: 8300000, guid: 224d941648dfeaa4789803fe45612cb0, type: 3}
   _startCount3: {fileID: 8300000, guid: 3b83abc1afac887448ac1f55ddf7e4b6, type: 3}
   _startCount_Go: {fileID: 8300000, guid: 1df2e4e20395d8341a667d2f7a6e0e7b, type: 3}
+  _gameTimeUp: {fileID: 8300000, guid: 634d7d00613414c47acb9b75778a5a74, type: 3}
 --- !u!82 &413296009493495641
 AudioSource:
   m_ObjectHideFlags: 0
@@ -77,16 +83,16 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 100
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0

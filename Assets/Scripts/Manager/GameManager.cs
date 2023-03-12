@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// ゲーム全体の状態を管理するクラス
@@ -163,6 +162,9 @@ public class GameManager : MonoBehaviour
     {
         // マウスカーソルを非表示にする
         Cursor.visible = false;
+
+        // メインBGMを再生
+        _seManager.PlayGame_BGM();
     }
     /// <summary>
     /// ゲームステートがGameOverになったとき

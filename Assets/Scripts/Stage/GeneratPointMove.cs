@@ -23,11 +23,11 @@ public class GeneratPointMove : MonoBehaviour
         }
 
         // ƒŠƒXƒg‚ð”z—ñ‚É•ÏŠ·‚µ‚ÄDOPath‚Å“®‚©‚·
-        this.transform.DOPath(_relayPoint.ToArray(), _motionTime).OnComplete(MoveLoop);
+        transform.DOPath(_relayPoint.ToArray(), _motionTime).SetEase(Ease.Linear).OnComplete(MoveLoop);
     }
 
     private void MoveLoop()
     {
-        this.transform.DOPath(_relayPoint.ToArray(), _motionTime).OnComplete(MoveLoop);
+        transform.DOPath(_relayPoint.ToArray(), _motionTime).SetEase(Ease.Linear).OnComplete(MoveLoop);
     }
 }

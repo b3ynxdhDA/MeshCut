@@ -9,7 +9,7 @@ public class Generater : MonoBehaviour
     // 変数宣言----------------------------------
     [SerializeField, Header("プレイヤーの位置")]
     private Transform _playerTransform;
-    [SerializeField, Header("生成するオブジェクトのプレハブ")]
+    // 生成するオブジェクトのプレハブ
     private GameObject[] _generatedObjectPrefab;
     // オブジェクトを生成する位置のゲームオブジェクトのリスト
     private List<GameObject> _generatPoint = new List<GameObject>();
@@ -34,6 +34,10 @@ public class Generater : MonoBehaviour
             _generatPoint.Add(childObject.gameObject);
         }
 
+        // CutTargetフォルダからプレハブを取得
+        _generatedObjectPrefab = Resources.LoadAll<GameObject>("CutTarget");
+
+        // 投擲の間隔をランダムに設定する
         _throwInterval = Random.Range(_THROW_INTERVAL_MIN, _THROW_INTERVAL_MAX);
 
     }
@@ -52,6 +56,7 @@ public class Generater : MonoBehaviour
         if(_throwInterval < 0)
         {
             RandomThrow();
+            // 投擲の間隔をランダムに設定する
             _throwInterval = Random.Range(_THROW_INTERVAL_MIN, _THROW_INTERVAL_MAX);
         }
 

@@ -32,15 +32,22 @@ public class StageManager : MonoBehaviour
     // 1分間の秒数
     const int _ONE_MINUTES = 60;
     // 1回のゲーム時間
-    const int _GAME_TIME = 60;
+    const int _GAME_TIME = 6;
+    // 通常のタイムスケール
+    const float _DEFAULT_TIMESCALE = 1f;
+    // 
+    const float _GAMEOVER_TEXT_POSITION_Y = 0;
 
     private void Start()
     {
+        // タイムスケールを初期化する
+        Time.timeScale = _DEFAULT_TIMESCALE;
+
+        // ゲームオーバーテキストを初期化
+        _gameOverText.SetActive(false);
+
         // アニメーターを取得する
         _animator = GetComponent<Animator>();
-
-        // ゲームオーバーのアニメーションを初期化
-        _animator.SetBool("isGameOver", false);
 
         // ゲームの状態をゲーム中に
         GameManager.instance.game_State = GameManager.GameState.GameRedy;
@@ -109,14 +116,27 @@ public class StageManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator GameOver()
     {
+        // タイムスケールを初期化する
+        Time.timeScale = _DEFAULT_TIMESCALE;
+
+        // タイムアップのSEを鳴らす
+        GameManager.instance._seManager.OnGameTimeUp_SE();
+
         // ゲームステートをGameOverに
         GameManager.instance.game_State = GameManager.GameState.GameOver;
 
+        // ゲームオーバーテキストを表示
         _gameOverText.SetActive(true);
-        // ゲームオーバーテキストが降りてくるアニメーションを再生
-        _animator.SetBool("isGameOver",true);
 
-        yield return new WaitForSeconds(3f);
+        // ゲームオーバーテキストのポジションが0より大きい間
+        while (_GAMEOVER_TEXT_POSITION_Y < _gameOverText.transform.localPosition.y)
+        {
+            // ゲームオーバーテキストのポジションを下げる
+            _gameOverText.transform.localPosition +=  Vector3.down * 10;
+            yield return new WaitForSeconds(0.001f);
+        }
+
+        yield return new WaitForSeconds(2f);
 
         // ゲームステートをResultに
         GameManager.instance.game_State = GameManager.GameState.Result;

@@ -35,11 +35,11 @@ public class PauseScript : MonoBehaviour
         {
             return;
         }
-        //ポーズUIのアクティブを切り替え
+        // ポーズUIのアクティブを切り替え
         _pauseUI.SetActive(!_pauseUI.activeSelf);
 
 
-        //ポーズUIが表示されている時は停止
+        // ポーズUIが表示されていない時は停止
         if (_pauseUI.activeSelf)
         {
             // タイムスケールを0にして止める
@@ -48,6 +48,9 @@ public class PauseScript : MonoBehaviour
             // ゲームステートをポーズに
             GameManager.instance.game_State = GameManager.GameState.Pause;
 
+            // ポーズした時のSEを鳴らす
+            GameManager.instance._seManager.OnPsuse_SE();
+
             // カーソルロックをしていたら
             if (Cursor.lockState == CursorLockMode.Locked)
             {
@@ -55,6 +58,7 @@ public class PauseScript : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
             }
         }
+        // ポーズUIが表示されている時は再開
         else
         {
             // タイムスケールを1にして再開
