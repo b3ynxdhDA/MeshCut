@@ -8,9 +8,14 @@ public class TitleManager : MonoBehaviour
 {
     void Start()
     {
+        // タイムスケールを直す
         Time.timeScale = 1f;
+
+        // ゲーム起動時にタイトルBGMを再生
+        GameManager.instance._audioManager.PlayTitle_BGM();
+
         // ゲームの状態をTitleにする
-        GameManager.instance.game_State = GameManager.GameState.Title;
+        GameManager.instance._gameStateProperty = GameManager.GameState.Title;
     }
 
     /// <summary>
@@ -18,7 +23,13 @@ public class TitleManager : MonoBehaviour
     /// </summary>
     public void OnGameScene()
     {
-        GameManager.instance.game_State = GameManager.GameState.GameRedy;
+        // ボタンを押したときのSEを鳴らす
+        GameManager.instance._audioManager.OnDecision_SE();
+
+        // ゲームステートをゲーム開始に遷移する
+        GameManager.instance._gameStateProperty = GameManager.GameState.GameRedy;
+
+        // ゲームシーンに遷移する
         SceneManager.LoadScene("GameScene");
     }
 
@@ -27,6 +38,9 @@ public class TitleManager : MonoBehaviour
     /// </summary>
     public void OnConfigButton()
     {
+        // ボタンを押したときのSEを鳴らす
+        GameManager.instance._audioManager.OnDecision_SE();
+
         // ゲームマネージャーの終了メソッドを呼び出す
         GameManager.instance.CallConfigUI();
     }

@@ -10,16 +10,12 @@ public class GameManager : MonoBehaviour
     private GameObject _configCanvas = default;
 
     [HideInInspector]// SEマネージャー
-    public SEManager _seManager = default;
+    public AudioManager _audioManager = default;
 
-    // ゲームマネージャーインスタンス
-    public static GameManager instance { get; set; }
 
     // GameManager内のゲームステート
-    private GameState _game_State = GameState.Title;
+    private GameState _gameState = GameState.Title;
 
-    // 他のクラスから参照されるゲームステート
-    public GameState game_State { get; set; } = GameState.Title;
     /// <summary>
     /// ゲームの状態
     /// Title:タイトル
@@ -44,10 +40,24 @@ public class GameManager : MonoBehaviour
     [HideInInspector]// スコアの変数
     public int _nowScore = 0;
 
+    [HideInInspector]// 制限時間の変数
+    public int _timerCount = 0;
+
+
+    // プロパティ--------------------------------------
+    /// <summary>
+    /// 他のクラスから参照されるゲームステートのプロパティ
+    /// </summary>
+    public GameState _gameStateProperty { get; set; } = GameState.Title;
+    /// <summary>
+    /// ゲームマネージャーインスタンスプロパティ
+    /// </summary>
+    public static GameManager instance { get; set; }
+
     private void Awake()
     {
         // SEマネージャーを外部から参照しやすく
-        _seManager = transform.GetComponent<SEManager>();
+        _audioManager = transform.GetComponent<AudioManager>();
 
         // GameManagerをシングルトンにする
         if (instance == null)
@@ -64,58 +74,59 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         // ゲームステートが切り替わったら
-        if(_game_State != game_State)
+        if(_gameState != _gameStateProperty)
         {
             // 切り替え後のゲームステートでそれぞれ処理する
-            switch (game_State)
+            switch (_gameStateProperty)
             {
                 case GameState.Title:
-                    _game_State = game_State;
+                    _gameState = _gameStateProperty;
 
                     ChangeStateToTitle();
                     break;
                 case GameState.GameRedy:
-                    _game_State = game_State;
+                    _gameState = _gameStateProperty;
 
                     ChangeStateToGameRedy();
                     break;
                 case GameState.GameNow:
-                    _game_State = game_State;
+                    _gameState = _gameStateProperty;
 
                     ChangeStateToGameNow();
                     break;
                 case GameState.GameOver:
-                    _game_State = game_State;
+                    _gameState = _gameStateProperty;
 
                     ChangeStateToGameOver();
                     break;
                 case GameState.Pause:
-                    _game_State = game_State;
+                    _gameState = _gameStateProperty;
 
                     ChangeStateToPause();
                     break;
                 case GameState.Config:
-                    _game_State = game_State;
+                    _gameState = _gameStateProperty;
 
                     ChangeStateToConfig();
                     break;
                 case GameState.Result:
-                    _game_State = game_State;
+                    _gameState = _gameStateProperty;
 
                     ChangeStateToResult();
                     break;
             }
         }
-        _seManager.CheckVolume();
+        // audioSourseにConfigの設定値を反映させる
+        _audioManager.CheckVolume();
     }
-
+    
     /// <summary>
     /// コンフィグキャンバスを表示
     /// </summary>
     public void CallConfigUI()
     {
         _configCanvas.SetActive(true);
-        _game_State = GameState.Config;
+        _gameStateProperty = GameState.Config;
     }
 
     /// <summary>
@@ -154,6 +165,9 @@ public class GameManager : MonoBehaviour
 
         // マウスカーソルを非表示にする
         Cursor.visible = false;
+
+        // メインBGMを再生
+        _audioManager.PlayGame_BGM();
     }
     /// <summary>
     /// ゲームステートがGameNowになったとき
@@ -162,9 +176,6 @@ public class GameManager : MonoBehaviour
     {
         // マウスカーソルを非表示にする
         Cursor.visible = false;
-
-        // メインBGMを再生
-        _seManager.PlayGame_BGM();
     }
     /// <summary>
     /// ゲームステートがGameOverになったとき
@@ -197,6 +208,8 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
         // カーソルロックを解除する
         Cursor.lockState = CursorLockMode.None;
+        // リザルトBGMを再生
+        _audioManager.PlayResult_BGM();
     }
 
     #endregion

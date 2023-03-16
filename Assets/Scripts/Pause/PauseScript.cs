@@ -31,7 +31,7 @@ public class PauseScript : MonoBehaviour
     public void OnPouse()
     {
         // ゲームステートがゲーム中かポーズ以外ならreturnする
-        if (!(GameManager.instance.game_State == GameManager.GameState.GameNow || GameManager.instance.game_State == GameManager.GameState.Pause))
+        if (!(GameManager.instance._gameStateProperty == GameManager.GameState.GameNow || GameManager.instance._gameStateProperty == GameManager.GameState.Pause))
         {
             return;
         }
@@ -46,10 +46,10 @@ public class PauseScript : MonoBehaviour
             Time.timeScale = 0f;
 
             // ゲームステートをポーズに
-            GameManager.instance.game_State = GameManager.GameState.Pause;
+            GameManager.instance._gameStateProperty = GameManager.GameState.Pause;
 
             // ポーズした時のSEを鳴らす
-            GameManager.instance._seManager.OnPsuse_SE();
+            GameManager.instance._audioManager.OnPsuse_SE();
 
             // カーソルロックをしていたら
             if (Cursor.lockState == CursorLockMode.Locked)
@@ -65,7 +65,7 @@ public class PauseScript : MonoBehaviour
             Time.timeScale = 1f;
 
             // ゲームステートをゲーム中に
-            GameManager.instance.game_State = GameManager.GameState.GameNow;
+            GameManager.instance._gameStateProperty = GameManager.GameState.GameNow;
 
             // カーソルロックをしていなかったた
             if (Cursor.lockState == CursorLockMode.None)

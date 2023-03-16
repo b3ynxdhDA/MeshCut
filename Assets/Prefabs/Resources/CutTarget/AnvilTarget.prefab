@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23000010007301302}
   - component: {fileID: 5355584727936212582}
   - component: {fileID: -825645771736789764}
+  - component: {fileID: -5403511975452725446}
   m_Layer: 8
   m_Name: AnvilTarget
   m_TagString: Untagged
@@ -62,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 98d65a9194c37364f864694737ae15f6, type: 2}
+  - {fileID: 2100000, guid: d97258346a708454ca4ba56d32b3cf64, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -114,3 +115,15 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 008af07397e64b0419d330cfcad1fac1, type: 3}
+--- !u!114 &-5403511975452725446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011416989972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2258041156d3d424782335434424faf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

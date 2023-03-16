@@ -52,10 +52,10 @@ namespace Player
         const float _DEFAULT_TIMESCALE = 1f;
 
 
-        void Update()
+        private void Update()
         {
             // ƒQ[ƒ€‚Ìó‘Ô‚ªƒQ[ƒ€’†ˆÈŠO‚È‚çˆ—‚µ‚È‚¢
-            if(GameManager.instance.game_State != GameManager.GameState.GameNow)
+            if(GameManager.instance._gameStateProperty != GameManager.GameState.GameNow)
             {
                 return;
             }
@@ -137,14 +137,13 @@ namespace Player
             {
                 // Ø’f–Ê‚ğŒvZ‚·‚é
                 (Vector3 center, Vector3 normal) = CalculationCutSurface(_hitPositions[0], _hitPositions[_hitPositions.Count + _LIST_END]);
-                //_meshCut.Cut(_tergetObject, center, normal, _material);
-                (GameObject backObject, GameObject frontObject) = NewMeshCut.CutGameObject(_tergetObject, center, normal, _isCutSurfaceFill, _CutSurfaceMaterial);
+                (GameObject backObject, GameObject frontObject) = MeshCut.CutGameObject(_tergetObject, center, normal, _isCutSurfaceFill, _CutSurfaceMaterial);
 
                 // Ø’f‘ÎÛ‚Érigidbody‚ª•t‚¢‚Ä‚¢‚½‚ç
                 if (frontObject && _tergetObject.GetComponent<Rigidbody>())
                 {
                     // Ø’f‰¹‚ğ–Â‚ç‚·
-                    GameManager.instance._seManager.OnCut_SE();
+                    GameManager.instance._audioManager.OnCut_SE();
 
                     // ƒXƒRƒA‚ğ‰ÁZ
                     GameManager.instance._nowScore += _CUT_SCORE;

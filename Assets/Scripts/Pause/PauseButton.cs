@@ -14,6 +14,9 @@ public class PauseButton : MonoBehaviour
     /// </summary>
     public void OnTitleButton()
     {
+        // ボタンを押したときのSEを鳴らす
+        GameManager.instance._audioManager.OnDecision_SE();
+
         // タイトルシーンに戻る
         SceneManager.LoadScene("TitleScene");
     }
@@ -22,7 +25,10 @@ public class PauseButton : MonoBehaviour
     /// </summary>
     public void OnRetryButton()
     {
-        // タイトルシーンに戻る
+        // ボタンを押したときのSEを鳴らす
+        GameManager.instance._audioManager.OnDecision_SE();
+
+        // 現在のシーンを再び呼び出す
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -31,6 +37,9 @@ public class PauseButton : MonoBehaviour
     /// </summary>
     public void OnConfigButton()
     {
+        // ボタンを押したときのSEを鳴らす
+        GameManager.instance._audioManager.OnDecision_SE();
+
         // ゲームマネージャーの終了メソッドを呼び出す
         GameManager.instance.CallConfigUI();
     }
@@ -40,6 +49,9 @@ public class PauseButton : MonoBehaviour
     /// </summary>
     public void OnExitButton()
     {
+        // ボタンを押したときのSEを鳴らす
+        GameManager.instance._audioManager.OnDecision_SE();
+
         // ゲームマネージャーの終了メソッドを呼び出す
         GameManager.instance.OnExit();
     }

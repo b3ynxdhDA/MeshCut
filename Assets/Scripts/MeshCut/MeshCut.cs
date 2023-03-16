@@ -4,8 +4,14 @@ using UnityEngine;
 
 /// <summary>
 /// 処理速度を意識したメッシュ切断クラス
+/// 参考元  https://qiita.com/suga__/private/66133062defa747a2cf2
+/// 変数名やマジックナンバーを無くして
+/// (追加部分)------
+/// コライダーコンポーネントの識別、変更機能の追加　386行目
+/// 接地時のオブジェクト削除スクリプトの追加  368行目
+/// 処理を理解するためコメントを追加
 /// </summary>
-public class NewMeshCut : MonoBehaviour
+public class MeshCut : MonoBehaviour
 {
     // 変数宣言----------------------------------
     // 切断対象のメッシュ
@@ -20,13 +26,13 @@ public class NewMeshCut : MonoBehaviour
     // 切断対象のメッシュのUV
     static Vector2[] _targetUVs;   
 
-    //平面の方程式はn・r=h(nは法線,rは位置ベクトル,hはconst(=_planeValue))
+    // 平面の方程式はn・r=h(nは法線,rは位置ベクトル,hはconst(=_planeValue))
     static Vector3 _planeNormal; //nの部分
     static float _planeValue;    //rの部分
 
-    //頂点が切断面に対して表にあるか裏にあるか
+    // 頂点が切断面に対して表にあるか裏にあるか
     static bool[] _isFront;
-    //切断後のMeshでの切断前の頂点の番号を追跡する配列
+    // 切断後のMeshでの切断前の頂点の番号を追跡する配列
     static int[] _trackedArray;
 
     // 切断面を生成済みか

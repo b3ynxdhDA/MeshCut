@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// リザルトを管理するクラス
+/// リザルト画面を管理するクラス
 /// </summary>
 public class ResultManager : MonoBehaviour
 {
@@ -107,6 +107,10 @@ public class ResultManager : MonoBehaviour
     /// </summary>
     public void OnDeleteScore()
     {
+        // ボタンを押したときのSEを鳴らす
+        GameManager.instance._audioManager.OnDecision_SE();
+
+        // スコアデータを全て削除する
         PlayerPrefs.DeleteAll();
     }
 }

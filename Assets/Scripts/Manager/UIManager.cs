@@ -3,13 +3,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// ステージやそのUIを管理するクラス
+/// ステージ上のUIを管理するクラス
 /// </summary>
-public class StageManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
     // 変数宣言--------------------------
-    private Animator _animator = default;
-    // タイマー
+    // タイマーから残り時間を取得
     private float _timerCount = 0;
 
     // テキストオブジェクト---------------------------
@@ -31,11 +30,9 @@ public class StageManager : MonoBehaviour
     // 定数宣言---------------------
     // 1分間の秒数
     const int _ONE_MINUTES = 60;
-    // 1回のゲーム時間
-    const int _GAME_TIME = 6;
     // 通常のタイムスケール
     const float _DEFAULT_TIMESCALE = 1f;
-    // 
+    // ゲームオーバーテキストの移動後のY座標
     const float _GAMEOVER_TEXT_POSITION_Y = 0;
 
     private void Start()
@@ -46,32 +43,23 @@ public class StageManager : MonoBehaviour
         // ゲームオーバーテキストを初期化
         _gameOverText.SetActive(false);
 
-        // アニメーターを取得する
-        _animator = GetComponent<Animator>();
-
         // ゲームの状態をゲーム中に
-        GameManager.instance.game_State = GameManager.GameState.GameRedy;
+        GameManager.instance._gameStateProperty = GameManager.GameState.GameRedy;
 
         // ゲームスタートのカウントダウンを開始
         StartCoroutine("CountdownCoroutine");
-
-        // 制限時間を設定
-        _timerCount = _GAME_TIME;
     }
     private void Update()
     {
-        // ハイスコアの表示を更新
+        // ハイスコアの表示をUIに反映
         _scoreCountText.text = "" + GameManager.instance._nowScore;
 
         // ゲームステートがゲーム中の時
-        if (GameManager.instance.game_State == GameManager.GameState.GameNow)
+        if (GameManager.instance._gameStateProperty == GameManager.GameState.GameNow)
         {
-            // タイマーの更新(増加)
-            //_timerCount += Time.deltaTime;
-            //_timerCountText.text = "" + ((int)_timerCount / ONE_MINUTES).ToString("00") + " : " + ((int)_timerCount % ONE_MINUTES).ToString("00");
-
             // タイマーの更新(減少)
-            _timerCount -= Time.deltaTime;
+            _timerCount = GetComponent<GameTimer>().TimerCount;
+            // タイマーの残り時間をUIに反映
             _timerCountText.text = "" + ((int)_timerCount / _ONE_MINUTES).ToString("00") + " : " + ((int)_timerCount % _ONE_MINUTES).ToString("00");
 
             // 制限時間が0より小さくなったら
@@ -90,24 +78,24 @@ public class StageManager : MonoBehaviour
         _startCountText.gameObject.SetActive(true);
 
         _startCountText.text = "3";
-        GameManager.instance._seManager.OnStartCount3_SE();
+        GameManager.instance._audioManager.OnStartCount3_SE();
         yield return new WaitForSeconds(1f);
 
         _startCountText.text = "2";
-        GameManager.instance._seManager.OnStartCount3_SE();
+        GameManager.instance._audioManager.OnStartCount3_SE();
         yield return new WaitForSeconds(1f);
 
         _startCountText.text = "1";
-        GameManager.instance._seManager.OnStartCount3_SE();
+        GameManager.instance._audioManager.OnStartCount3_SE();
         yield return new WaitForSeconds(1f);
 
         _startCountText.text = "GO!";
-        GameManager.instance._seManager.OnStartCountGo_SE();
+        GameManager.instance._audioManager.OnStartCountGo_SE();
         yield return new WaitForSeconds(1f);
 
         _startCountText.text = "";
         _startCountText.gameObject.SetActive(false);
-        GameManager.instance.game_State = GameManager.GameState.GameNow;
+        GameManager.instance._gameStateProperty = GameManager.GameState.GameNow;
     }
 
     /// <summary>
@@ -120,10 +108,10 @@ public class StageManager : MonoBehaviour
         Time.timeScale = _DEFAULT_TIMESCALE;
 
         // タイムアップのSEを鳴らす
-        GameManager.instance._seManager.OnGameTimeUp_SE();
+        GameManager.instance._audioManager.OnGameTimeUp_SE();
 
         // ゲームステートをGameOverに
-        GameManager.instance.game_State = GameManager.GameState.GameOver;
+        GameManager.instance._gameStateProperty = GameManager.GameState.GameOver;
 
         // ゲームオーバーテキストを表示
         _gameOverText.SetActive(true);
@@ -139,7 +127,7 @@ public class StageManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // ゲームステートをResultに
-        GameManager.instance.game_State = GameManager.GameState.Result;
+        GameManager.instance._gameStateProperty = GameManager.GameState.Result;
         
         _resultUI.SetActive(true);
     }

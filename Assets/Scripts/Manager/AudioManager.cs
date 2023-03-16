@@ -3,7 +3,7 @@
 /// <summary>
 /// ゲームのSEを管理するクラス
 /// </summary>
-public class SEManager : MonoBehaviour
+public class AudioManager : MonoBehaviour
 {
     // 変数宣言----------------------------------
     // システム音などを管理するAudioSource
@@ -20,23 +20,26 @@ public class SEManager : MonoBehaviour
     private AudioClip _resultBGM = default;
 
     // ゲームのSE---------------------------------------
-    [SerializeField,Header("切断")] 
-    private AudioClip _cuting = default;
+    [SerializeField,Header("切断物が投擲されたSE")] 
+    private AudioClip _throwingSE = default;
+
+    [SerializeField,Header("切断時のSE")] 
+    private AudioClip _cutingSE = default;
 
     [SerializeField,Header("決定のSE")] 
-    private AudioClip _onDecision = default;
+    private AudioClip _onDecisionSE = default;
 
     [SerializeField,Header("ポーズのSE")] 
-    private AudioClip _onPause = default;
+    private AudioClip _onPauseSE = default;
 
     [SerializeField,Header("カウントダウンのSE")] 
-    private AudioClip _startCount3 = default;
+    private AudioClip _startCountDownSE = default;
 
     [SerializeField,Header("ゲームスタートのSE")]
-    private AudioClip _startCount_Go = default;
+    private AudioClip _gameStartSE = default;
 
     [SerializeField,Header("ゲーム終了のSE")]
-    private AudioClip _gameTimeUp = default;
+    private AudioClip _gameTimeUpSE = default;
 
     private void Awake()
     {
@@ -88,46 +91,53 @@ public class SEManager : MonoBehaviour
 
     #region SEメソッド
     /// <summary>
+    /// 投擲SEを鳴らす
+    /// </summary>
+    public void Throwing_SE()
+    {
+        _audioSource.PlayOneShot(_throwingSE);
+    }
+    /// <summary>
     /// 切断SEを鳴らす
     /// </summary>
     public void OnCut_SE()
     {
-        _audioSource.PlayOneShot(_cuting);
+        _audioSource.PlayOneShot(_cutingSE);
     }
     /// <summary>
     /// 決定SEを鳴らす
     /// </summary>
     public void OnDecision_SE()
     {
-        _audioSource.PlayOneShot(_onDecision);
+        _audioSource.PlayOneShot(_onDecisionSE);
     }
     /// <summary>
     /// ポーズSEを鳴らす
     /// </summary>
     public void OnPsuse_SE()
     {
-        _audioSource.PlayOneShot(_onPause);
+        _audioSource.PlayOneShot(_onPauseSE);
     }
     /// <summary>
     /// スタートカウントダウンの三秒のSEを鳴らす
     /// </summary>
     public void OnStartCount3_SE()
     {
-        _audioSource.PlayOneShot(_startCount3);
+        _audioSource.PlayOneShot(_startCountDownSE);
     }
     /// <summary>
     /// スタートカウントダウンの最後のゲーム開始SEを鳴らす
     /// </summary>
     public void OnStartCountGo_SE()
     {
-        _audioSource.PlayOneShot(_startCount_Go);
+        _audioSource.PlayOneShot(_gameStartSE);
     }
     /// <summary>
     /// ゲームのタイムアップSEを鳴らす
     /// </summary>
     public void OnGameTimeUp_SE()
     {
-        _audioSource.PlayOneShot(_gameTimeUp);
+        _audioSource.PlayOneShot(_gameTimeUpSE);
     }
     #endregion
 }

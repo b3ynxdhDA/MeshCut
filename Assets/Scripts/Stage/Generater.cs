@@ -20,7 +20,7 @@ public class Generater : MonoBehaviour
     // 発射角度の最小
     const float _ANGLE_MIN = 30;
     // 発射角度の最小
-    const float _ANGLE_MAX = 71;
+    const float _ANGLE_MAX = 61;
     // 投擲間隔の最小
     const int _THROW_INTERVAL_MIN = 1;
     // 投擲間隔の最大
@@ -45,7 +45,7 @@ public class Generater : MonoBehaviour
     void Update()
     {
         // ゲームの状態がゲーム中以外なら処理しない
-        if (GameManager.instance.game_State != GameManager.GameState.GameNow)
+        if (GameManager.instance._gameStateProperty != GameManager.GameState.GameNow)
         {
             return;
         }
@@ -85,6 +85,7 @@ public class Generater : MonoBehaviour
     /// </summary>
     private void Throwing(GameObject throwObject, Vector3 throwPosition)
     {
+        // 投擲するオブジェクトを作成する
         GameObject generatedObject = Instantiate(throwObject, throwPosition, Quaternion.identity);
 
         // 射出角度をランダムに決める
@@ -96,6 +97,9 @@ public class Generater : MonoBehaviour
         // AddForceで射出する
         Rigidbody rid = generatedObject.GetComponent<Rigidbody>();
         rid.AddForce(velocity * rid.mass, ForceMode.Impulse);
+
+        // 投擲したときのSEを鳴らす
+        GameManager.instance._audioManager.Throwing_SE();
     }
 
     /// <summary>

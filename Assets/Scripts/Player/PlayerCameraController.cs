@@ -7,6 +7,7 @@ namespace Player
 {
     /// <summary>
     /// プレイヤーのカメラ操作に関するクラス
+    /// 参考元　　https://www.popii33.com/unity-first-person-camera/
     /// </summary>
     public class PlayerCameraController : MonoBehaviour
     {
@@ -27,7 +28,7 @@ namespace Player
         const float minX = -90f;
         const float maxX = 90f;
 
-        void Start()
+        private void Start()
         {
             // プレイヤーのメインカメラを取得
             _playerCamera = Camera.main.gameObject;
