@@ -47,7 +47,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _configCanvas: {fileID: 1200619586308441919, guid: 7765cb6ae060398479ed7af0b18b8f05, type: 3}
   _audioManager: {fileID: 0}
-  _nowScore: 0
 --- !u!114 &4429697775210250949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,6 +61,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _titleBGM: {fileID: 8300000, guid: a74699589979e6542a93cb6332ac12c8, type: 3}
   _mainBGM: {fileID: 8300000, guid: 76ea9f4757108314aa7f59b259ca0682, type: 3}
+  _nearLimitTimeBGM: {fileID: 8300000, guid: 804814a40e4d9ba4399fe1e31c763c4b, type: 3}
   _resultBGM: {fileID: 8300000, guid: e21d3b81fe3efa248af06bc114d265d1, type: 3}
   _throwingSE: {fileID: 8300000, guid: 56f583e51820052429c53ec1b61edfc4, type: 3}
   _cutingSE: {fileID: 8300000, guid: b706457eacaf83146b39c84df19c0555, type: 3}

@@ -10,16 +10,18 @@ public class UIManager : MonoBehaviour
     // 変数宣言--------------------------
     // タイマーから残り時間を取得
     private float _timerCount = 0;
+    // 制限時間が少ないか
+    private bool _isNearTimeLimit = false;
 
     // テキストオブジェクト---------------------------
-    // ゲームスタートのカウント
-    [SerializeField] private Text _startCountText = default;
-
     // ゲームオーバーテキスト
     [SerializeField] private GameObject _gameOverText = default;
 
     // リザルトテキスト
     [SerializeField] private GameObject _resultUI = default;
+
+    // ゲームスタートのカウント
+    [SerializeField] private Text _startCountText = default;
 
     // ハイスコアテキスト
     [SerializeField] private Text _scoreCountText = default;
@@ -44,30 +46,39 @@ public class UIManager : MonoBehaviour
         _gameOverText.SetActive(false);
 
         // ゲームの状態をゲーム中に
-        GameManager.instance._gameStateProperty = GameManager.GameState.GameRedy;
+        GameManager.instance.GameStateProperty = GameManager.GameState.GameRedy;
 
         // ゲームスタートのカウントダウンを開始
         StartCoroutine("CountdownCoroutine");
     }
     private void Update()
     {
-        // ハイスコアの表示をUIに反映
-        _scoreCountText.text = "" + GameManager.instance._nowScore;
-
-        // ゲームステートがゲーム中の時
-        if (GameManager.instance._gameStateProperty == GameManager.GameState.GameNow)
+        // ゲームステートがゲーム中の時以外は処理しない
+        if (GameManager.instance.GameStateProperty != GameManager.GameState.GameNow)
         {
-            // タイマーの更新(減少)
-            _timerCount = GetComponent<GameTimer>().TimerCount;
-            // タイマーの残り時間をUIに反映
-            _timerCountText.text = "" + ((int)_timerCount / _ONE_MINUTES).ToString("00") + " : " + ((int)_timerCount % _ONE_MINUTES).ToString("00");
-
-            // 制限時間が0より小さくなったら
-            if(_timerCount < 0)
-            {
-                StartCoroutine("GameOver");
-            }
+            return;
         }
+        // ハイスコアの表示をUIに反映
+        _scoreCountText.text = "" + GameManager.instance.NowScore;
+
+        // タイマーの更新(減少)
+        _timerCount = GameManager.instance.TimerCount;
+
+        // タイマーの残り時間をUIに反映
+        _timerCountText.text = "" + ((int)_timerCount / _ONE_MINUTES).ToString("00") + " : " + ((int)_timerCount % _ONE_MINUTES).ToString("00");
+
+        // 制限時間が少なくなったら
+        if (GameManager.instance.IsNearTimeLimit && !_isNearTimeLimit)
+        {
+            _timerCountText.color = Color.red;
+        }
+
+        // 制限時間が0より小さくなったら
+        if (GameManager.instance.IsTimeOver)
+        {
+            StartCoroutine("GameOver");
+        }
+
     }
 
     /// <summary>
@@ -95,7 +106,7 @@ public class UIManager : MonoBehaviour
 
         _startCountText.text = "";
         _startCountText.gameObject.SetActive(false);
-        GameManager.instance._gameStateProperty = GameManager.GameState.GameNow;
+        GameManager.instance.GameStateProperty = GameManager.GameState.GameNow;
     }
 
     /// <summary>
@@ -111,7 +122,7 @@ public class UIManager : MonoBehaviour
         GameManager.instance._audioManager.OnGameTimeUp_SE();
 
         // ゲームステートをGameOverに
-        GameManager.instance._gameStateProperty = GameManager.GameState.GameOver;
+        GameManager.instance.GameStateProperty = GameManager.GameState.GameOver;
 
         // ゲームオーバーテキストを表示
         _gameOverText.SetActive(true);
@@ -127,7 +138,7 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // ゲームステートをResultに
-        GameManager.instance._gameStateProperty = GameManager.GameState.Result;
+        GameManager.instance.GameStateProperty = GameManager.GameState.Result;
         
         _resultUI.SetActive(true);
     }

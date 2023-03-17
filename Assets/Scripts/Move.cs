@@ -13,7 +13,7 @@ public class Move : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
 
-        GameManager.instance._gameStateProperty = GameManager.GameState.GameNow;
+        GameManager.instance.GameStateProperty = GameManager.GameState.GameNow;
     }
 
     void Update()

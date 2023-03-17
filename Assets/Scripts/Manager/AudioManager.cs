@@ -15,6 +15,9 @@ public class AudioManager : MonoBehaviour
     
     [SerializeField,Header("メインゲーム中のBGM")] 
     private AudioClip _mainBGM = default;
+
+    [SerializeField,Header("ゲーム終盤のBGM")] 
+    private AudioClip _nearLimitTimeBGM = default;
     
     [SerializeField,Header("リザルト中のBGM")] 
     private AudioClip _resultBGM = default;
@@ -77,6 +80,14 @@ public class AudioManager : MonoBehaviour
     public void PlayGame_BGM()
     {
         _audioSource.clip = _mainBGM;
+        _audioSource.Play();
+    }
+    /// <summary>
+    /// ゲーム終盤のBGMを再生する
+    /// </summary>
+    public void NearLimitTime_BGM()
+    {
+        _audioSource.clip = _nearLimitTimeBGM;
         _audioSource.Play();
     }
     /// <summary>

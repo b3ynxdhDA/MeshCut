@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// ゲーム全体の状態を管理するクラス
+/// ゲームの状態を管理するクラス
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -37,22 +37,50 @@ public class GameManager : MonoBehaviour
         Config    
     };
 
-    [HideInInspector]// スコアの変数
-    public int _nowScore = 0;
+    // 制限時間の変数
+    private float _timerCount = 0;
+    // タイムオーバーしたか
+    private bool _isTimeOver = false;
+    // 制限時間が残り僅かか
+    private bool _isNearTimeLimit = false;
 
-    [HideInInspector]// 制限時間の変数
-    public int _timerCount = 0;
-
+    // 定数宣言---------------------
+    // 1回のゲーム時間
+    const int _GAME_TIME = 90;
+    // 最終局面の時間
+    const float _NEAR_LIMIT_TIME = 30f;
 
     // プロパティ--------------------------------------
     /// <summary>
     /// 他のクラスから参照されるゲームステートのプロパティ
     /// </summary>
-    public GameState _gameStateProperty { get; set; } = GameState.Title;
+    public GameState GameStateProperty { get; set; } = GameState.Title;
+
     /// <summary>
     /// ゲームマネージャーインスタンスプロパティ
     /// </summary>
     public static GameManager instance { get; set; }
+
+    /// <summary>
+    /// スコアのプロパティ
+    /// </summary>
+    public int NowScore { get; set; } = 0;
+    
+    /// <summary>
+    /// ゲームの制限時間のプロパティ
+    /// </summary>
+    public float TimerCount { get { return _timerCount; } }
+    
+    /// <summary>
+    /// タイムオーバーのプロパティ
+    /// </summary>
+    public bool IsTimeOver { get { return _isTimeOver; } }
+
+    /// <summary>
+    /// 制限時間が残り僅かかのプロパティ
+    /// </summary>
+    public bool IsNearTimeLimit{ get { return _isNearTimeLimit; } }
+
 
     private void Awake()
     {
@@ -73,44 +101,44 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // ゲームステートが切り替わったら
-        if(_gameState != _gameStateProperty)
+        // ゲームステートが切り替わった瞬間
+        if(_gameState != GameStateProperty)
         {
             // 切り替え後のゲームステートでそれぞれ処理する
-            switch (_gameStateProperty)
+            switch (GameStateProperty)
             {
                 case GameState.Title:
-                    _gameState = _gameStateProperty;
+                    _gameState = GameStateProperty;
 
                     ChangeStateToTitle();
                     break;
                 case GameState.GameRedy:
-                    _gameState = _gameStateProperty;
+                    _gameState = GameStateProperty;
 
                     ChangeStateToGameRedy();
                     break;
                 case GameState.GameNow:
-                    _gameState = _gameStateProperty;
+                    _gameState = GameStateProperty;
 
                     ChangeStateToGameNow();
                     break;
                 case GameState.GameOver:
-                    _gameState = _gameStateProperty;
+                    _gameState = GameStateProperty;
 
                     ChangeStateToGameOver();
                     break;
                 case GameState.Pause:
-                    _gameState = _gameStateProperty;
+                    _gameState = GameStateProperty;
 
                     ChangeStateToPause();
                     break;
                 case GameState.Config:
-                    _gameState = _gameStateProperty;
+                    _gameState = GameStateProperty;
 
                     ChangeStateToConfig();
                     break;
                 case GameState.Result:
-                    _gameState = _gameStateProperty;
+                    _gameState = GameStateProperty;
 
                     ChangeStateToResult();
                     break;
@@ -118,6 +146,37 @@ public class GameManager : MonoBehaviour
         }
         // audioSourseにConfigの設定値を反映させる
         _audioManager.CheckVolume();
+
+        // 
+        GameTimer();
+    }
+    /// <summary>
+    /// ゲームのタイマーを減らすメソッド
+    /// </summary>
+    private void GameTimer()
+    {
+        // ゲームステートがゲーム中の時以外は処理しない
+        if (_gameState != GameManager.GameState.GameNow)
+        {
+            return;
+        }
+        // タイマーの更新(減少)
+        _timerCount -= Time.deltaTime;
+
+        // 制限時間が0より小さいなら
+        if (!_isTimeOver && _timerCount < 0)
+        {
+            _isTimeOver = true;
+        }
+
+        // 制限時間が_NEAR_LIMIT_TIME以下か
+        if (!_isNearTimeLimit && _timerCount <= _NEAR_LIMIT_TIME)
+        {
+            _isNearTimeLimit = true;
+
+            // BGMを変える
+            _audioManager.NearLimitTime_BGM();
+        }
     }
     
     /// <summary>
@@ -126,7 +185,7 @@ public class GameManager : MonoBehaviour
     public void CallConfigUI()
     {
         _configCanvas.SetActive(true);
-        _gameStateProperty = GameState.Config;
+        GameStateProperty = GameState.Config;
     }
 
     /// <summary>
@@ -158,7 +217,16 @@ public class GameManager : MonoBehaviour
     private void ChangeStateToGameRedy()
     {
         // スコアを初期化
-        _nowScore = 0;
+        NowScore = 0;
+
+        // 制限時間を初期化
+        _timerCount = _GAME_TIME;
+
+        // 初期化
+        _isTimeOver = false;
+
+        // 初期化
+        _isNearTimeLimit = false;
 
         // カーソルをゲーム画面内でのみ動かせるようにする
         Cursor.lockState = CursorLockMode.Confined;

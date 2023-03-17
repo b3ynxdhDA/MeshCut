@@ -28,6 +28,8 @@ namespace Player
         private bool _isCutting = false;
         // 切断中のスロー状態
         private bool _isSlow = false;
+        [SerializeField, Header("レティクルのUIオブジェクト")]
+        private GameObject _reticleUI = default;
         [SerializeField, Header("カーソル跡のオブジェクト")]
         private GameObject _cursorTrail = default;
         // カーソルロック
@@ -55,7 +57,7 @@ namespace Player
         private void Update()
         {
             // ゲームの状態がゲーム中以外なら処理しない
-            if(GameManager.instance._gameStateProperty != GameManager.GameState.GameNow)
+            if(GameManager.instance.GameStateProperty != GameManager.GameState.GameNow)
             {
                 return;
             }
@@ -86,6 +88,9 @@ namespace Player
                 {
                     // カーソル跡を表示する
                     _cursorTrail.SetActive(!_cursorTrail.activeSelf);
+
+                    // レティクルを消す
+                    _reticleUI.SetActive(false);
                 }
             }
             else
@@ -112,6 +117,9 @@ namespace Player
                 {
                     // カーソル跡を非表示にする
                     _cursorTrail.SetActive(!_cursorTrail.activeSelf);
+
+                    // レティクルを表示する
+                    _reticleUI.SetActive(true);
                 }
             }
         }
@@ -146,7 +154,7 @@ namespace Player
                     GameManager.instance._audioManager.OnCut_SE();
 
                     // スコアを加算
-                    GameManager.instance._nowScore += _CUT_SCORE;
+                    GameManager.instance.NowScore += _CUT_SCORE;
 
                     // 切断したオブジェクトの間隔を開ける
                     frontObject.GetComponent<Rigidbody>().AddForce(-normal * _CUT_DIVISION_FORCE, ForceMode.Impulse);

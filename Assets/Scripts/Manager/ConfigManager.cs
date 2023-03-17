@@ -92,7 +92,7 @@ public class ConfigManager : MonoBehaviour
     private void OnEnable()
     {
         // コンフィグを呼び出した時のゲームステートを記録
-        _backGameState = GameManager.instance._gameStateProperty;
+        _backGameState = GameManager.instance.GameStateProperty;
     }
 
     void Update()
@@ -202,7 +202,7 @@ public class ConfigManager : MonoBehaviour
     private void OnBack()
     {
         // ゲームステートを呼び出す前の状態に戻す
-        GameManager.instance._gameStateProperty = _backGameState;
+        GameManager.instance.GameStateProperty = _backGameState;
         this.gameObject.SetActive(false);
     }
 }

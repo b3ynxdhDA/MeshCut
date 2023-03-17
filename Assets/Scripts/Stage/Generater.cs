@@ -16,15 +16,19 @@ public class Generater : MonoBehaviour
     // 投擲インターバル
     float _throwInterval = default;
 
-    // 定数宣言---------------------
+    // 定数宣言------------------------------------
     // 発射角度の最小
     const float _ANGLE_MIN = 30;
-    // 発射角度の最小
+    // 発射角度の最大
     const float _ANGLE_MAX = 61;
     // 投擲間隔の最小
     const int _THROW_INTERVAL_MIN = 1;
     // 投擲間隔の最大
     const int _THROW_INTERVAL_MAX = 4;
+    // 投擲間隔の最小
+    const float _OBJECT_QUATERNION_MIN = -180f;
+    // 投擲間隔の最大
+    const float _OBJECT_QUATERNION_MAX = 181f;
 
     void Start()
     {
@@ -45,7 +49,7 @@ public class Generater : MonoBehaviour
     void Update()
     {
         // ゲームの状態がゲーム中以外なら処理しない
-        if (GameManager.instance._gameStateProperty != GameManager.GameState.GameNow)
+        if (GameManager.instance.GameStateProperty != GameManager.GameState.GameNow)
         {
             return;
         }
@@ -53,18 +57,19 @@ public class Generater : MonoBehaviour
         // インターバルを1秒づつ減らす
         _throwInterval -= Time.deltaTime;
         // インターバルが0より小さくなれば
-        if(_throwInterval < 0)
+        if (_throwInterval < 0)
         {
+            // オブジェクトを投擲する
             RandomThrow();
+
+            // 制限時間が_FINAL_STAGE_TIME以下なら追加でオブジェクトを投擲する
+            if (GameManager.instance.IsNearTimeLimit)
+            {
+                RandomThrow();
+            }
+
             // 投擲の間隔をランダムに設定する
             _throwInterval = Random.Range(_THROW_INTERVAL_MIN, _THROW_INTERVAL_MAX);
-        }
-
-
-        // @スペースでランダム投擲
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            RandomThrow();
         }
     }
 
@@ -75,7 +80,7 @@ public class Generater : MonoBehaviour
     {
         // ランダムな投擲するオブジェクトプレハブの引数
         int randomThrowObjectArgument = Random.Range(0, _generatedObjectPrefab.Length);
-        // ランダムな投擲位置
+        // ランダムな投擲位置の引数
         int randomThrowPositionArgument = Random.Range(0, _generatPoint.Count);
         // ランダムなオブジェクトをランダムなポジションから投擲する
         Throwing(_generatedObjectPrefab[randomThrowObjectArgument], _generatPoint[randomThrowPositionArgument].transform.position);
@@ -85,8 +90,14 @@ public class Generater : MonoBehaviour
     /// </summary>
     private void Throwing(GameObject throwObject, Vector3 throwPosition)
     {
+        // ランダムなQuaternionの値
+        float randomQuaternion =  Random.Range(_OBJECT_QUATERNION_MIN, _OBJECT_QUATERNION_MAX);
+
+        // 投擲するオブジェクトの角度をランダムに設定
+        Quaternion objectQuaternion = Quaternion.Euler(randomQuaternion, randomQuaternion, randomQuaternion);
+
         // 投擲するオブジェクトを作成する
-        GameObject generatedObject = Instantiate(throwObject, throwPosition, Quaternion.identity);
+        GameObject generatedObject = Instantiate(throwObject, throwPosition, objectQuaternion);
 
         // 射出角度をランダムに決める
         float throwAngle = Random.Range(_ANGLE_MIN, _ANGLE_MAX);

@@ -28,7 +28,7 @@ public class ResultManager : MonoBehaviour
     private void OnEnable()
     {
         // 今回のスコアを取得
-        _nowScore = GameManager.instance._nowScore;
+        _nowScore = GameManager.instance.NowScore;
         // スコア更新フラグを初期化
         _isHighScoreUpdate = false;
         // スコアデータの番号
